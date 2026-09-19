@@ -27,6 +27,21 @@ ROUND_SECONDS=20 INTERMISSION_SECONDS=5 npm start
 $env:ROUND_SECONDS=20; $env:INTERMISSION_SECONDS=5; npm start
 ```
 
+## Deploy with Render
+
+The server uses Socket.IO and in-memory state, so it needs a long-running web
+service. The included `render.yaml` deploys the Docker image as one Render web
+service, which supports WebSockets without any additional proxy setup.
+
+1. Push this repository to GitHub or GitLab.
+2. In the Render dashboard, choose **New > Blueprint** and select the repository.
+3. Confirm the `splinter` service from `render.yaml` and click **Apply**.
+
+Render will build the included `Dockerfile`, set the `PORT` value used by
+`server.js`, run the `/api/config` health check, and provide the public URL.
+Keep the service at one instance because the lobby and scores live in process
+memory. A deploy, restart, or sleeping free instance resets the current game.
+
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `PORT` | `3000` | HTTP port |

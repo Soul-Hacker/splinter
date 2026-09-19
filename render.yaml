@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: splinter
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/config
+    numInstances: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ROUND_SECONDS
+        value: "120"
+      - key: INTERMISSION_SECONDS
+        value: "15"
