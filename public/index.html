@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Splinter: a multiplayer word game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/">Splinter</a>
+    <div class="top-right">
+      <span id="conn" class="conn" hidden>Reconnecting…</span>
+      <span id="youChip" class="you-chip" hidden></span>
+    </div>
+  </header>
+
+  <div class="layout" id="layout">
+    <main id="main">
+
+      <!-- 1. Join -->
+      <section id="screen-join" class="screen">
+        <h1 class="hero">Split one long word into as many short ones as you can.</h1>
+        <form id="joinForm" class="join-form" autocomplete="off">
+          <label for="usernameInput">Choose a username</label>
+          <div class="row">
+            <input id="usernameInput" maxlength="16" required spellcheck="false" autocapitalize="off">
+            <button class="btn" type="submit">Join lobby</button>
+          </div>
+          <p id="joinError" class="error" role="alert"></p>
+        </form>
+        <ul class="rules">
+          <li>A game is <span id="ruleRounds">5</span> rounds. Every round, everyone gets the same word and <span id="ruleTime">2 minutes</span> on the clock.</li>
+          <li>Each word needs 3 or more letters, made only from the letters in the base word, never using a letter more often than the base word has it.</li>
+          <li>Words must be in the dictionary. The base word itself doesn't count.</li>
+          <li>When time runs out, a word that two or more players found is crossed out for everyone. Each word only you found earns 1 point.</li>
+        </ul>
+      </section>
+
+      <!-- 2. Lobby -->
+      <section id="screen-lobby" class="screen" hidden>
+        <h1 class="hero">Waiting in the lobby</h1>
+        <p id="lobbyHint" class="lede"></p>
+        <button id="startBtn" class="btn btn-big" type="button">Start game</button>
+        <p id="startError" class="error" role="alert"></p>
+      </section>
+
+      <!-- 3. Playing -->
+      <section id="screen-game" class="screen" hidden>
+        <div class="stage">
+          <div class="stage-head">
+            <span id="roundLabel" class="round-label"></span>
+            <span id="timer" class="timer" aria-hidden="true">2:00</span>
+          </div>
+          <div class="bar" aria-hidden="true"><div id="barFill" class="bar-fill"></div></div>
+          <div id="tiles" class="tiles"></div>
+        </div>
+
+        <div id="entry" class="entry">
+          <label class="sr-only" for="wordInput">Your word</label>
+          <input id="wordInput" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="30" placeholder="Type a word, press Enter">
+          <button id="submitBtn" class="btn" type="button">Add word</button>
+        </div>
+        <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+
+        <div class="mywords">
+          <h2>Your words <span id="wordCount" class="count">0</span></h2>
+          <ul id="myWords" class="chips"></ul>
+          <p id="myWordsEmpty" class="empty">Nothing yet. Start with the short ones.</p>
+        </div>
+      </section>
+
+      <!-- 4. Between rounds -->
+      <section id="screen-results" class="screen" hidden>
+        <h1 id="resultsTitle" class="hero hero-sm"></h1>
+        <p class="lede">The word was <strong id="resultsBase"></strong>. Next round starts in <span id="nextIn">0</span>s.</p>
+        <div id="resultsGrid" class="results-grid"></div>
+        <p class="legend"><span class="chip unique">green</span> found only by that player, 1 point. <span class="chip cancelled">crossed out</span> found by two or more players, 0 points.</p>
+      </section>
+
+      <!-- 5. Game over -->
+      <section id="screen-final" class="screen" hidden>
+        <h1 id="winnerTitle" class="hero"></h1>
+        <p id="winnerSub" class="lede"></p>
+        <div class="table-wrap">
+          <table class="standings">
+            <thead id="standingsHead"></thead>
+            <tbody id="standingsBody"></tbody>
+          </table>
+        </div>
+        <button id="playAgainBtn" class="btn btn-big" type="button">Play again</button>
+        <p id="playAgainError" class="error" role="alert"></p>
+
+        <h2 id="lastRoundTitle" class="subhead"></h2>
+        <div id="finalResultsGrid" class="results-grid"></div>
+      </section>
+    </main>
+
+    <aside id="side" class="side" hidden>
+      <h2 id="sideTitle"></h2>
+      <ol id="scoreList" class="score-list"></ol>
+    </aside>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
