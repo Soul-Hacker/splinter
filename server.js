@@ -22,6 +22,10 @@ const io = new Server(server);
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/api/config', (_req, res) => res.json({ roundSeconds: ROUND_SECONDS }));
 app.get('/healthz', (_req, res) => res.send('ok'));
+app.get('/ads.txt', (_req, res) => {
+  res.type('text/plain');
+  res.send('google.com, pub-8789716413238583, DIRECT, f08c47fec0942fa0');
+});
 
 /** Push a fresh, per-player snapshot to everyone in one room. */
 function broadcastRoom(game) {
