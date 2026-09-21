@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Splinter: a multiplayer word game</title>
+  <title>Spliinter: a multiplayer word game</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
@@ -11,44 +12,106 @@
 </head>
 <body>
   <header class="top">
-    <a class="brand" href="/">Splinter</a>
+    <a class="brand" href="/">Spliinter</a>
     <div class="top-right">
       <span id="conn" class="conn" hidden>Reconnecting…</span>
+      <span id="roomChip" class="room-chip" hidden></span>
       <span id="youChip" class="you-chip" hidden></span>
+      <button id="leaveBtn" class="btn-quiet" type="button" hidden>Leave room</button>
     </div>
   </header>
 
   <div class="layout" id="layout">
     <main id="main">
 
-      <!-- 1. Join -->
+      <!-- 1. Pick a username -->
       <section id="screen-join" class="screen">
         <h1 class="hero">Split one long word into as many short ones as you can.</h1>
         <form id="joinForm" class="join-form" autocomplete="off">
           <label for="usernameInput">Choose a username</label>
           <div class="row">
             <input id="usernameInput" maxlength="16" required spellcheck="false" autocapitalize="off">
-            <button class="btn" type="submit">Join lobby</button>
+            <button class="btn" type="submit">Continue</button>
           </div>
           <p id="joinError" class="error" role="alert"></p>
         </form>
         <ul class="rules">
-          <li>A game is <span id="ruleRounds">5</span> rounds. Every round, everyone gets the same word and <span id="ruleTime">2 minutes</span> on the clock.</li>
+          <li>Create a room and share its code or link, or join someone else's. The host picks how many rounds to play, from 1 to 10. Every round, everyone in the room gets the same word and <span id="ruleTime">2 minutes</span> on the clock.</li>
           <li>Each word needs 3 or more letters, made only from the letters in the base word, never using a letter more often than the base word has it.</li>
           <li>Words must be in the dictionary. The base word itself doesn't count.</li>
           <li>When time runs out, a word that two or more players found is crossed out for everyone. Each word only you found earns 1 point.</li>
+          <li>The best score in a round wins gold, then silver and bronze. After the last round, the highest total wins the game.</li>
         </ul>
       </section>
 
-      <!-- 2. Lobby -->
+      <!-- 2. Room browser -->
+      <section id="screen-rooms" class="screen" hidden>
+        <div class="rooms-head">
+          <h1 class="hero hero-sm">Find a game</h1>
+          <button id="changeName" class="btn-quiet" type="button">Change username</button>
+        </div>
+        <p id="roomsError" class="error" role="alert"></p>
+        <div class="rooms-grid">
+          <div class="panel">
+            <h2>Public rooms</h2>
+            <ul id="roomList" class="room-list"></ul>
+            <p id="roomsEmpty" class="empty">No public rooms yet. Create one and invite a friend.</p>
+          </div>
+          <div class="rooms-side">
+            <form id="createForm" class="panel form-stack" autocomplete="off">
+              <h2>Create a room</h2>
+              <label for="roomName">Room name <span class="hint">(optional)</span></label>
+              <input id="roomName" maxlength="24" spellcheck="false">
+              <label for="roomSize">Max players</label>
+              <select id="roomSize">
+                <option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option>
+                <option selected>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
+              </select>
+              <label class="check"><input type="checkbox" id="roomPublic" checked> Show in the public room list</label>
+              <button class="btn" type="submit">Create room</button>
+            </form>
+            <form id="codeForm" class="panel form-stack" autocomplete="off">
+              <h2>Join with a code</h2>
+              <label class="sr-only" for="roomCode">Room code</label>
+              <div class="row">
+                <input id="roomCode" maxlength="8" placeholder="Room code" spellcheck="false" autocapitalize="characters">
+                <button class="btn" type="submit">Join</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Room lobby -->
       <section id="screen-lobby" class="screen" hidden>
-        <h1 class="hero">Waiting in the lobby</h1>
+        <h1 id="lobbyTitle" class="hero"></h1>
+        <div class="panel invite">
+          <div>
+            <span class="invite-label">Room code</span>
+            <strong id="roomCodeText" class="room-code"></strong>
+          </div>
+          <div class="invite-link">
+            <input id="inviteLink" readonly aria-label="Invite link" spellcheck="false">
+            <button id="copyInvite" class="btn btn-outline" type="button">Copy link</button>
+          </div>
+          <p id="roomVisibility" class="hint"></p>
+        </div>
         <p id="lobbyHint" class="lede"></p>
-        <button id="startBtn" class="btn btn-big" type="button">Start game</button>
+        <div id="hostControls" class="host-controls">
+          <div class="rounds-picker">
+            <span id="roundsLabel" class="rounds-label">Rounds</span>
+            <div class="stepper" role="group" aria-labelledby="roundsLabel">
+              <button id="roundsMinus" class="step-btn" type="button" aria-label="Fewer rounds">&minus;</button>
+              <output id="roundsValue" class="step-value" aria-live="polite">5</output>
+              <button id="roundsPlus" class="step-btn" type="button" aria-label="More rounds">+</button>
+            </div>
+          </div>
+          <button id="startBtn" class="btn btn-big" type="button">Start game</button>
+        </div>
         <p id="startError" class="error" role="alert"></p>
       </section>
 
-      <!-- 3. Playing -->
+      <!-- 4. Playing -->
       <section id="screen-game" class="screen" hidden>
         <div class="stage">
           <div class="stage-head">
@@ -73,15 +136,16 @@
         </div>
       </section>
 
-      <!-- 4. Between rounds -->
+      <!-- 5. Between rounds -->
       <section id="screen-results" class="screen" hidden>
         <h1 id="resultsTitle" class="hero hero-sm"></h1>
         <p class="lede">The word was <strong id="resultsBase"></strong>. Next round starts in <span id="nextIn">0</span>s.</p>
+        <div id="medalSummary" class="medal-summary"></div>
         <div id="resultsGrid" class="results-grid"></div>
         <p class="legend"><span class="chip unique">green</span> found only by that player, 1 point. <span class="chip cancelled">crossed out</span> found by two or more players, 0 points.</p>
       </section>
 
-      <!-- 5. Game over -->
+      <!-- 6. Game over -->
       <section id="screen-final" class="screen" hidden>
         <h1 id="winnerTitle" class="hero"></h1>
         <p id="winnerSub" class="lede"></p>
@@ -92,6 +156,7 @@
           </table>
         </div>
         <button id="playAgainBtn" class="btn btn-big" type="button">Play again</button>
+        <p id="playAgainWait" class="lede" hidden>Waiting for the host to start another game.</p>
         <p id="playAgainError" class="error" role="alert"></p>
 
         <h2 id="lastRoundTitle" class="subhead"></h2>
@@ -105,7 +170,20 @@
     </aside>
   </div>
 
+  <div id="popup" class="popup" hidden>
+    <div class="popup-card" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+      <h2 id="popupTitle" class="popup-title"></h2>
+      <div id="popupMedals" class="medal-summary"></div>
+      <ol id="popupList" class="rank-list" aria-label="Scoreboard"></ol>
+      <button id="popupClose" class="btn" type="button">See all words</button>
+    </div>
+  </div>
+
+  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Legal"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
+  <div id="cookieBanner" class="cookie-banner" hidden role="region" aria-label="Cookie choices"><p>Spliinter uses essential browser storage to keep the game working. Optional advertising or analytics technologies will only be used with your consent where required.</p><div class="cookie-actions"><button id="cookieReject" class="btn btn-outline" type="button">Reject optional</button><button id="cookieAccept" class="btn" type="button">Accept optional</button></div></div>
+
   <script src="/socket.io/socket.io.js"></script>
+  <script src="cookie-consent.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

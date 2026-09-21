@@ -1,6 +1,6 @@
-# Splinter
+# Spliinter
 
-A real-time multiplayer word game. Everyone gets the same long word and two minutes to split it into as many shorter words as they can. Words that two or more players find cancel out; words only you found score.
+A real-time multiplayer word game. Everyone in a room gets the same long word and two minutes to split it into as many shorter words as they can. Words that two or more players find cancel out; words only you found score. The best score each round wins a gold, silver or bronze medal.
 
 Node.js + Socket.io on the server, plain HTML/CSS/JavaScript on the client. No database: all state lives in server memory.
 
@@ -13,18 +13,18 @@ npm install
 npm start
 ```
 
-Open http://localhost:3000 in two browser tabs. Each tab is its own player (the session is kept per tab), so you can test alone. Pick a different username in each tab, then press **Start game**.
+Open http://localhost:3000 in two browser tabs. Each tab is its own player (the session is kept per tab), so you can test alone: pick a username in each tab, create a room in one, join it from the other with the room code, then press **Start game** as the host.
 
 To play with other people on the same Wi-Fi, run the server on your machine and have them open `http://<your-local-IP>:3000`.
 
-### Shorter timers for testing
+### Settings
 
 ```bash
 # macOS / Linux
-ROUND_SECONDS=20 INTERMISSION_SECONDS=5 npm start
+ROUND_SECONDS=20 INTERMISSION_SECONDS=8 npm start
 
 # Windows PowerShell
-$env:ROUND_SECONDS=20; $env:INTERMISSION_SECONDS=5; npm start
+$env:ROUND_SECONDS=20; $env:INTERMISSION_SECONDS=8; npm start
 ```
 
 ## Deploy with Render
@@ -46,38 +46,61 @@ memory. A deploy, restart, or sleeping free instance resets the current game.
 | --- | --- | --- |
 | `PORT` | `3000` | HTTP port |
 | `ROUND_SECONDS` | `120` | Length of each round |
-| `INTERMISSION_SECONDS` | `15` | Pause on the results screen before the next round starts |
+| `INTERMISSION_SECONDS` | `20` | Pause between rounds (the scoreboard popup and results screen) |
+| `EMPTY_ROOM_SECONDS` | `45` | How long a room with nobody connected is kept before it is closed |
+| `BASE_WORDS` | `random` | `random`: any suitable word from the full dictionary. `common`: a hand-picked list of about 90 everyday long words |
+
+## Rooms
+
+- After choosing a username, a player lands on the **room browser**: a live list of public rooms, a "Create a room" form and a "Join with a code" box.
+- **Creating a room:** optional name (2-24 characters, defaults to "<username>'s room"), max players (2-12, default 8) and whether it is listed publicly. The creator is the **host**.
+- **Sharing:** every room has a 5-character code (no look-alike characters such as 0/O or 1/I) and an invite link, `/?room=CODE`. The address bar always shows the invite link while you are in a room. Opening one asks for a username, then joins straight away.
+- **Public vs private:** public rooms appear in the browser (name, host, players, and whether they are waiting or in a game). Private rooms only join by code or link.
+- **Host controls:** only the host can start a game, pick the number of rounds (1-10) and press Play again. If the host leaves or disconnects, the longest-present connected player becomes host.
+- **Full or running rooms:** a new player can't join a room that is full or mid-game (the browser shows the button disabled). A player who dropped out of a running game can rejoin by using the same username.
+- **Leaving:** the "Leave room" button returns to the browser. Empty rooms are closed after `EMPTY_ROOM_SECONDS`, so a page refresh never loses a room. The server keeps at most 200 rooms.
+- Usernames are unique per room, not globally.
 
 ## Rules as implemented
 
-- Join with a unique username (2-16 characters, case-insensitive). At least 2 players are needed to start; anyone in the lobby can press Start.
-- A game is exactly 5 rounds. Each round uses one random long word from a curated list (5 distinct words per game), the same for every player, with a server-enforced 2-minute countdown.
+- At least 2 players are needed to start.
+- Each round uses one long word (9-12 letters), the same for everyone in the room, with a server-enforced countdown. Words don't repeat within a game.
 - The server validates every submission: at least 3 letters, not the base word, only letters from the base word and no letter more often than the base word has it, and present in the dictionary.
 - At the end of a round, a word found by 2+ players scores 0 for everyone; each word found by exactly one player scores 1 point. Other players' words stay hidden until the round ends.
-- Totals accumulate across rounds. After round 5 the highest total wins; equal totals are declared a tie.
-- "Play again" returns everyone to the lobby with scores reset.
+- **Medals:** the top round score wins gold, then silver and bronze. Ties share a medal and skip the next one (two golds means no silver). A score of 0 never earns a medal.
+- **Scoreboard popup:** after every round a popup shows the standings before the round, then the points being added and the rows sliding up or down into their new places. It closes on its own when the next round starts, or with the button, Escape or a click outside.
+- Totals accumulate across rounds. After the last round the highest total wins (equal totals are a tie), and the final table shows each player's medal counts.
+- "Play again" returns the room to its lobby with scores reset.
+
+## Dictionary and round words
+
+Words come from the [`word-list`](https://www.npmjs.com/package/word-list) package (274,137 words, MIT licensed). It is ESM-only, so `lib/dictionary.js` loads it with a dynamic `import()`, reads it once into a `Set` for validation, and keeps the array for picking words.
+
+In `random` mode, each round's word is drawn at random from the dictionary's 9-12 letter words, skipping plain inflections (plurals, -ed, -ing, -ly and similar) and words that hide fewer than 120 other valid words. The word list is a Scrabble-style list, so some random picks are obscure. If that isn't fun, start with `BASE_WORDS=common`.
 
 ## Project layout
 
 ```
-server.js          Express static server + Socket.io event wiring
-lib/game.js        Game state machine: players, phases, timers, snapshots
-lib/rules.js       Pure functions: word validation and round scoring
-lib/dictionary.js  Loads the check-word English list into a Set
-lib/baseWords.js   Curated long words, filtered against the dictionary
+server.js          Express static server + Socket.io event wiring (rooms, lobby, game events)
+lib/rooms.js       RoomManager: creates rooms and codes, lists public rooms, closes empty ones
+lib/game.js        One room's state machine: players, host, phases, timers, medals, snapshots
+lib/rules.js       Pure functions: word validation, round scoring, medals
+lib/dictionary.js  Loads word-list into memory
+lib/baseWords.js   Picks the random (or common) base word for each round
 public/            index.html, style.css, app.js (client)
 ```
 
 ## How it works
 
-- **Server is the authority.** The client never decides validity, scores or time. It sends `join`, `start`, `submit` and `playAgain`; the server answers with an acknowledgement and pushes a per-player `state` snapshot to everyone whenever anything changes.
-- **Timers** are `setTimeout`s on the server (round end, then next round start). Snapshots include `endsAt` plus the server's current time, so each client corrects for clock differences and shows a countdown that matches the server. Submissions arriving after `endsAt` are rejected.
-- **Reconnecting:** each player gets a secret session token stored in `sessionStorage`. A page refresh or dropped connection resumes the same player, words and score. If a tab was closed mid-game, typing the same username reclaims that (disconnected) player. In the lobby, a player who disconnects is removed.
-- **Late joiners:** new usernames can't join while a game is in progress. If every player disconnects mid-game, the game is discarded.
-- **Disconnected players** stay on the scoreboard and their words still count for cancellation.
+- **Server is the authority.** The client never decides validity, scores or time. Events: `rooms:subscribe`, `createRoom`, `joinRoom`, `leaveRoom`, `start` (with `rounds`), `submit`, `playAgain`. The server answers each with an acknowledgement, pushes a per-player `state` snapshot to everyone in the room whenever anything changes, and pushes the public room list (batched, at most every 300 ms) to everyone who is browsing.
+- **Rooms are independent.** Each room is its own `Game` with its own timers, players and scores, so a game in one room never touches another.
+- **Timers** are `setTimeout`s on the server (round end, then next round start). Snapshots include `endsAt` plus the server's current time, so each client corrects for clock differences. Submissions arriving after `endsAt` are rejected.
+- **Reconnecting:** each player gets a secret token, stored with the room code in `sessionStorage`. A page refresh or dropped connection resumes the same player, words and score. In a lobby, a player who disconnects is removed (they can rejoin).
+- **Disconnected players** in a running game stay on the scoreboard and their words still count for cancellation.
 
-## Notes and limits
+## Putting it online
 
-- **Dictionary:** `check-word` bundles a large Scrabble-style list (about 275,000 words), so obscure words like "aah" are valid. The package's own `check()` re-reads a 2.8 MB file per lookup, so `lib/dictionary.js` loads its word list once into a Set instead. The package is GPL-2.0 licensed; if that matters for your use, swap in another list by changing only `lib/dictionary.js`.
-- **One lobby, one process.** State is in memory, so a server restart wipes the game, and running several Node processes would need shared state and sticky sessions. To support multiple rooms, create one `Game` per room code and route sockets to it.
-- There is no authentication or rate limiting; it's meant for friends, not the open internet.
+Any host that runs a long-lived Node process with WebSocket support works (a VPS, Render, Railway, Fly.io and similar). Set `PORT` if the host asks for it; `/healthz` returns `ok` for health checks.
+
+- **Run a single instance.** All rooms live in one process's memory. A restart ends every game, and several instances would need shared state and sticky sessions.
+- **Public names are user-generated.** Usernames and room names are shown to strangers. There is no profanity filter, moderation, accounts or rate limiting beyond a one-room-per-connection rule, a 1.5-second cooldown on creating rooms and the 200-room cap. Add a filter and IP-based rate limits before promoting it widely.
