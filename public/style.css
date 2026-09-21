@@ -355,3 +355,25 @@ select {
   display: inline-block; background: var(--tile); color: var(--ink); border-radius: 6px;
   padding: 0 6px; margin-left: 6px; font-size: 0.75rem; font-weight: 700; line-height: 1.5;
 }
+
+/* ---------- legal pages & consent ---------- */
+.legal-body { min-height: 100vh; display: flex; flex-direction: column; }
+.legal-page { width: min(720px, calc(100% - 40px)); margin: 0 auto; padding: 64px 0 72px; flex: 1; }
+.eyebrow { color: var(--unique); font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8125rem; }
+.legal-section { border-top: 1px solid var(--line); padding: 24px 0; display: flex; flex-direction: column; gap: 10px; }
+.legal-section h2 { font-size: 1.35rem; font-weight: 700; }
+.legal-section p { color: var(--ink-soft); max-width: 68ch; }
+.legal-section a, .site-footer a, .contact-link { color: var(--focus); font-weight: 700; }
+.site-footer { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 20px 0 28px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 0.9375rem; }
+.site-footer nav { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.footer-button { font: inherit; color: var(--focus); background: transparent; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+.cookie-banner { position: fixed; z-index: 60; left: 16px; right: 16px; bottom: 16px; margin: 0 auto; max-width: 860px; padding: 16px 18px; background: var(--ink); color: #fff; border-radius: 14px; box-shadow: 0 12px 32px rgba(21, 32, 59, 0.28); display: flex; align-items: center; gap: 18px; justify-content: space-between; }
+.cookie-banner p { color: #e5e9f2; font-size: 0.9375rem; max-width: 62ch; }
+.cookie-actions { display: flex; gap: 8px; flex: none; }
+.cookie-banner .btn-outline { background: transparent; color: #fff; border-color: #fff; }
+.cookie-banner .btn-outline:hover:not(:disabled) { color: var(--ink); background: #fff; }
+@media (max-width: 640px) {
+  .legal-page { padding-top: 40px; }
+  .cookie-banner { align-items: stretch; flex-direction: column; gap: 12px; }
+  .cookie-actions { justify-content: flex-end; }
+}

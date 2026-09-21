@@ -1,4 +1,4 @@
-# Splinter
+# Spliinter
 
 A real-time multiplayer word game. Everyone in a room gets the same long word and two minutes to split it into as many shorter words as they can. Words that two or more players find cancel out; words only you found score. The best score each round wins a gold, silver or bronze medal.
 

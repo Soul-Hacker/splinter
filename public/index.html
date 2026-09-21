@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Splinter: a multiplayer word game</title>
+  <title>Spliinter: a multiplayer word game</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
@@ -11,7 +12,7 @@
 </head>
 <body>
   <header class="top">
-    <a class="brand" href="/">Splinter</a>
+    <a class="brand" href="/">Spliinter</a>
     <div class="top-right">
       <span id="conn" class="conn" hidden>Reconnecting…</span>
       <span id="roomChip" class="room-chip" hidden></span>
@@ -178,7 +179,11 @@
     </div>
   </div>
 
+  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Legal"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
+  <div id="cookieBanner" class="cookie-banner" hidden role="region" aria-label="Cookie choices"><p>Spliinter uses essential browser storage to keep the game working. Optional advertising or analytics technologies will only be used with your consent where required.</p><div class="cookie-actions"><button id="cookieReject" class="btn btn-outline" type="button">Reject optional</button><button id="cookieAccept" class="btn" type="button">Accept optional</button></div></div>
+
   <script src="/socket.io/socket.io.js"></script>
+  <script src="cookie-consent.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
