@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Answers to common questions about Spliinter rooms, scoring, word validation, reconnection, and privacy.">
+  <title>Spliinter FAQ | Spliinter</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="legal-body">
+  <header class="top"><a class="brand" href="/">Spliinter</a><a class="btn-quiet" href="/">Back to game</a></header>
+  <main class="legal-page">
+    <p class="eyebrow">Common questions</p>
+    <h1 class="hero hero-sm">Spliinter FAQ</h1>
+    <p class="lede">A quick reference for rooms, rules, scoring, and what happens to your game when you refresh the page.</p>
+    <section class="legal-section"><h2>How many people can play?</h2><p>A room needs at least two players to start and supports up to twelve. The host chooses the room limit when creating it.</p></section>
+    <section class="legal-section"><h2>How long is a round?</h2><p>The standard round lasts two minutes. The host chooses how many rounds to play, from one to ten. The server controls the timer for every player.</p></section>
+    <section class="legal-section"><h2>Why was my word rejected?</h2><p>The word may be shorter than three letters, may use a letter too many times, may not be in the game's dictionary, or may be the base word itself. The server validates submissions using the same rules for everyone.</p></section>
+    <section class="legal-section"><h2>Why did my word get crossed out?</h2><p>A word is crossed out when at least two players submitted it in the same round. Shared words score zero, while a word found only by you earns one point.</p></section>
+    <section class="legal-section"><h2>Can I join a game already in progress?</h2><p>New players can join a waiting room before it starts. A room that is full or already playing is not open to new players, but someone who was disconnected can reconnect with the same browser session.</p></section>
+    <section class="legal-section"><h2>What happens if I refresh?</h2><p>Spliinter keeps a temporary room token in session storage for the current browser tab. After a refresh or brief connection drop, the game attempts to resume your place. Closing the tab or clearing storage removes that local reconnect information.</p></section>
+    <section class="legal-section"><h2>Are usernames accounts?</h2><p>No. Spliinter does not require an account. Your username is used only to identify you in the current room, and room state is held temporarily in server memory.</p></section>
+    <section class="legal-section"><h2>How do I report a problem?</h2><p>Send support or accessibility feedback to <a href="mailto:supportbacktick@gmail.com">supportbacktick@gmail.com</a>. For data questions, see the <a href="/privacy.html">Privacy Policy</a>.</p></section>
+  </main>
+  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Site"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Word strategy</a><a href="/faq.html">FAQ</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
+  <div id="cookieBanner" class="cookie-banner" hidden role="region" aria-label="Cookie choices"><p>Spliinter uses essential browser storage to keep the game working. Optional advertising or analytics technologies will only be used with your consent where required.</p><div class="cookie-actions"><button id="cookieReject" class="btn btn-outline" type="button">Reject optional</button><button id="cookieAccept" class="btn" type="button">Accept optional</button></div></div>
+  <script src="cookie-consent.js"></script>
+</body>
+</html>

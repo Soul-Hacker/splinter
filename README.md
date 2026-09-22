@@ -4,6 +4,12 @@ A real-time multiplayer word game. Everyone in a room gets the same long word an
 
 Node.js + Socket.io on the server, plain HTML/CSS/JavaScript on the client. No database: all state lives in server memory.
 
+The multiplayer app does not load advertising. Public editorial pages such as
+`/how-to-play.html`, `/strategy.html`, and `/faq.html` are separate static pages
+and are listed in `public/sitemap.xml`. Keep any future advertising limited to
+these substantive pages, never to the room browser, lobby, round, results, or
+standings screens.
+
 ## Run it locally
 
 Requires Node.js 18 or newer.
@@ -87,7 +93,7 @@ lib/game.js        One room's state machine: players, host, phases, timers, meda
 lib/rules.js       Pure functions: word validation, round scoring, medals
 lib/dictionary.js  Loads word-list into memory
 lib/baseWords.js   Picks the random (or common) base word for each round
-public/            index.html, style.css, app.js (client)
+public/            index.html, style.css, app.js (client), editorial and policy pages
 ```
 
 ## How it works

@@ -362,7 +362,12 @@ select {
 .eyebrow { color: var(--unique); font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8125rem; }
 .legal-section { border-top: 1px solid var(--line); padding: 24px 0; display: flex; flex-direction: column; gap: 10px; }
 .legal-section h2 { font-size: 1.35rem; font-weight: 700; }
+.legal-section h3 { font-size: 1.05rem; font-weight: 700; margin-top: 8px; }
 .legal-section p { color: var(--ink-soft); max-width: 68ch; }
+.guide-list { margin: 0; padding-left: 1.25em; color: var(--ink-soft); display: flex; flex-direction: column; gap: 6px; max-width: 68ch; }
+.guide-table-wrap { margin-top: 2px; }
+.guide-table { min-width: 520px; }
+.guide-table th, .guide-table td { text-align: left; }
 .legal-section a, .site-footer a, .contact-link { color: var(--focus); font-weight: 700; }
 .site-footer { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 20px 0 28px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 0.9375rem; }
 .site-footer nav { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
