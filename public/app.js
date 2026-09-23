@@ -116,6 +116,7 @@
         if (res && res.ok) {
           writeSession({ username: res.username, room: res.code, token: res.token });
           setUrlRoom(res.code);
+          window.splinterTrack('room_joined');
           return;
         }
         showRoomsError((res && res.error) || 'Could not join that room.');
@@ -170,6 +171,7 @@
         if (res && res.ok) {
           writeSession({ username: res.username, room: res.code, token: res.token });
           setUrlRoom(res.code);
+          window.splinterTrack('room_created', { max_players: Number($('roomSize').value), is_public: $('roomPublic').checked });
         } else {
           $('roomsError').textContent = (res && res.error) || 'Could not create the room.';
         }
@@ -227,6 +229,7 @@
     $('startError').textContent = '';
     socket.emit('start', { rounds: selectedRounds }, (res) => {
       if (!res.ok) $('startError').textContent = res.reason;
+      else window.splinterTrack('game_started', { rounds: selectedRounds });
     });
   });
 
@@ -234,6 +237,7 @@
     $('playAgainError').textContent = '';
     socket.emit('playAgain', {}, (res) => {
       if (!res.ok) $('playAgainError').textContent = res.reason;
+      else window.splinterTrack('game_rematch');
     });
   });
 
@@ -253,6 +257,7 @@
         wordInput.value = '';
         updateTileUsage();
         setFeedback(`Added ${res.word}`, 'ok');
+        window.splinterTrack('word_submitted');
       } else {
         setFeedback((res && res.reason) || 'Word rejected.', 'error');
         const entry = $('entry');

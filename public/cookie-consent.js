@@ -10,17 +10,19 @@
   if (manage) manage.addEventListener('click', showBanner);
 
   const choice = window.localStorage.getItem(STORAGE_KEY);
+  const choose = (accepted) => {
+    window.localStorage.setItem(STORAGE_KEY, accepted ? 'accepted' : 'rejected');
+    banner.hidden = true;
+    window.dispatchEvent(new CustomEvent('splinter-consent', { detail: { accepted } }));
+  };
+  document.getElementById('cookieAccept').addEventListener('click', () => {
+    choose(true);
+  });
+  document.getElementById('cookieReject').addEventListener('click', () => {
+    choose(false);
+  });
+
   if (choice === 'accepted' || choice === 'rejected') return;
 
   showBanner();
-  document.getElementById('cookieAccept').addEventListener('click', () => {
-    window.localStorage.setItem(STORAGE_KEY, 'accepted');
-    banner.hidden = true;
-    window.dispatchEvent(new CustomEvent('splinter-consent', { detail: { accepted: true } }));
-  });
-  document.getElementById('cookieReject').addEventListener('click', () => {
-    window.localStorage.setItem(STORAGE_KEY, 'rejected');
-    banner.hidden = true;
-    window.dispatchEvent(new CustomEvent('splinter-consent', { detail: { accepted: false } }));
-  });
 })();

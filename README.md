@@ -10,6 +10,16 @@ and are listed in `public/sitemap.xml`. Keep any future advertising limited to
 these substantive pages, never to the room browser, lobby, round, results, or
 standings screens.
 
+### Google Analytics
+
+The site includes a consent-aware Google Analytics 4 loader. Replace the
+`G-XXXXXXXXXX` placeholder in `public/analytics.js` with the Measurement ID
+from the Google Analytics web data stream. Analytics loads only after a visitor
+accepts optional cookies. GA4 reports daily users and page views, and its
+Realtime report shows active users. Custom events include room creation, room
+joins, game starts, rematches, and accepted word submissions; usernames, room
+codes, and submitted words are not sent.
+
 ## Run it locally
 
 Requires Node.js 18 or newer.
