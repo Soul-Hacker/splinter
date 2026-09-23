@@ -12,13 +12,12 @@ standings screens.
 
 ### Google Analytics
 
-The site includes a consent-aware Google Analytics 4 loader. Replace the
-`G-XXXXXXXXXX` placeholder in `public/analytics.js` with the Measurement ID
-from the Google Analytics web data stream. Analytics loads only after a visitor
-accepts optional cookies. GA4 reports daily users and page views, and its
-Realtime report shows active users. Custom events include room creation, room
-joins, game starts, rematches, and accepted word submissions; usernames, room
-codes, and submitted words are not sent.
+The site includes a consent-aware Google Analytics 4 tag for property
+`G-6G16BK3GC0`. Analytics storage is denied until a visitor accepts optional
+cookies. GA4 reports daily users and page views, and its Realtime report shows
+active users. Custom events include room creation, room joins, game starts,
+rematches, and accepted word submissions; usernames, room codes, and submitted
+words are not sent.
 
 ## Run it locally
 
