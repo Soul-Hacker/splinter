@@ -64,6 +64,21 @@ memory. A deploy, restart, or sleeping free instance resets the current game.
 | `INTERMISSION_SECONDS` | `20` | Pause between rounds (the scoreboard popup and results screen) |
 | `EMPTY_ROOM_SECONDS` | `45` | How long a room with nobody connected is kept before it is closed |
 | `BASE_WORDS` | `random` | `random`: any suitable word from the full dictionary. `common`: a hand-picked list of about 90 everyday long words |
+| `TRUST_PROXY_HOPS` | `0` | Number of trusted reverse proxies in front of the app. Set only when the deployment controls that proxy chain; the Render blueprint sets `1`. |
+
+## Abuse limits
+
+Socket.IO connections are limited to 30 per IP per minute. Per-IP event limits
+are 5 room creations, 30 joins and leaves, 60 room-list subscriptions, 10 game
+starts, 5 rematches, and 120 word submissions per minute. Rejected event
+acknowledgements include a retry delay. Socket.IO payloads are capped at 16 KB.
+Counters are in memory and shared across sockets on this process; they reset on
+restart and are not shared across multiple instances. Keep one instance or move
+the counters to shared storage before scaling horizontally.
+
+These controls reduce abusive application traffic, but cannot stop a volumetric
+DDoS attack from saturating the network or host. Use the hosting provider's
+network protections and an edge firewall or DDoS-protected proxy for that.
 
 ## Rooms
 
@@ -105,17 +120,132 @@ lib/baseWords.js   Picks the random (or common) base word for each round
 public/            index.html, style.css, app.js (client), editorial and policy pages
 ```
 
-## How it works
+## High-Level Design (HLD)
 
-- **Server is the authority.** The client never decides validity, scores or time. Events: `rooms:subscribe`, `createRoom`, `joinRoom`, `leaveRoom`, `start` (with `rounds`), `submit`, `playAgain`. The server answers each with an acknowledgement, pushes a per-player `state` snapshot to everyone in the room whenever anything changes, and pushes the public room list (batched, at most every 300 ms) to everyone who is browsing.
-- **Rooms are independent.** Each room is its own `Game` with its own timers, players and scores, so a game in one room never touches another.
-- **Timers** are `setTimeout`s on the server (round end, then next round start). Snapshots include `endsAt` plus the server's current time, so each client corrects for clock differences. Submissions arriving after `endsAt` are rejected.
-- **Reconnecting:** each player gets a secret token, stored with the room code in `sessionStorage`. A page refresh or dropped connection resumes the same player, words and score. In a lobby, a player who disconnects is removed (they can rejoin).
-- **Disconnected players** in a running game stay on the scoreboard and their words still count for cancellation.
+### System context
+
+Spliinter is a browser-based multiplayer word game. The browser renders the
+interface and sends player actions to one authoritative Node.js process. The
+server owns room membership, game state, timers, word validation, and scoring;
+clients receive snapshots and render them. There is no account system, database,
+or persistent game history.
+
+```mermaid
+flowchart LR
+	Player[Player browser<br/>HTML, CSS, app.js]
+	Static[Express static pages<br/>config, health, ads.txt]
+	Guard[Socket.IO connection<br/>and event rate limits]
+	Events[Socket event handlers]
+	Rooms[RoomManager<br/>room registry]
+	Game[Game instances<br/>state, timers, players]
+	Delivery[Snapshot broadcasts]
+	Rules[Word validation and scoring]
+	Dictionary[Dictionary]
+	Words[Base word selector]
+
+	Player -->|HTTP| Static
+	Player <-->|Socket.IO events and snapshots| Guard
+	Guard --> Events
+	Events --> Rooms
+	Rooms --> Game
+	Game --> Rules
+	Game --> Words
+	Rules --> Dictionary
+	Words --> Dictionary
+	Game -->|onChange| Delivery
+	Rooms -->|public room updates| Delivery
+	Events -->|acknowledgements| Player
+	Delivery -->|state and rooms| Player
+```
+
+### Deployment and boundaries
+
+- The application runs as one long-lived Node.js process in the supplied Docker image. Render is configured for one instance because rooms, rate-limit buckets, and timers are process-local.
+- Express serves the files in `public/`, `/api/config`, `/healthz`, and `/ads.txt`. Socket.IO provides the real-time game protocol over WebSocket or its transport fallback.
+- The dictionary is loaded from the `word-list` dependency during startup. The process prepares base-word lookup data before accepting traffic.
+- All game state is volatile. A process restart clears rooms, players, timers, and rate-limit counters. There is no database or cross-instance synchronization.
+- Socket connections and actions have per-IP fixed-window limits. The client IP comes from the socket transport address unless `TRUST_PROXY_HOPS` is configured for a trusted deployment proxy. These limits protect application work, not the network from volumetric DDoS traffic.
+- Since the app is authoritative, clients cannot set scores, bypass validation, change timers, or see other players' words before a round ends.
+
+## Low-Level Design (LLD)
+
+### Components and ownership
+
+| Component | Responsibilities |
+| --- | --- |
+| `server.js` | Creates Express and Socket.IO, serves static/health/config/ads endpoints, loads startup data, applies connection and event limits, dispatches events, and sends room/player snapshots. |
+| `lib/rooms.js` (`RoomManager`) | Creates and looks up rooms, generates room codes, validates room capacity, lists public rooms, and closes rooms after they remain empty. |
+| `lib/game.js` (`Game`) | Owns one room's players, host, phase, round timer, base words, submissions, scores, medals, reconnect behavior, and per-player snapshots. |
+| `lib/rules.js` | Pure word-validation, round-scoring, and medal-ranking functions. |
+| `lib/dictionary.js` | Loads the word-list package once and exposes dictionary membership and the word array. |
+| `lib/baseWords.js` | Prepares candidate word indexes and selects distinct round words from either the full dictionary or the common-word pool. |
+| `lib/fixedWindowRateLimiter.js` | Tracks per-key request counts in fixed 60-second windows and bounds the number of stored keys. |
+| `public/app.js` | Handles username/session state, room navigation, Socket.IO requests, incoming snapshots, and DOM rendering. It is not authoritative for rules or scores. |
+
+### Runtime and game-state flow
+
+1. Startup loads the dictionary, prepares base-word candidates, then starts the HTTP and Socket.IO server.
+2. A Socket.IO connection passes the per-IP connection limit. Each handled event passes its own per-IP event limit before its handler runs.
+3. A player creates or joins a room. `RoomManager` resolves the room and delegates membership changes to its `Game`. The game issues an opaque reconnect token and emits a change notification.
+4. The server sends each connected player a tailored state snapshot. The public room list is broadcast separately and its change notifications are batched for up to 300 ms.
+5. The host starts the game. `Game` chooses round words, enters `playing`, sets `endsAt`, and schedules the server-side round timer.
+6. A `submit` event is validated by `Game` and `validateWord`. Accepted words are stored in that player's set and a new state snapshot is broadcast. Other players see the word count, not the submitted words.
+7. At round end, the server scores all submissions, cancels words found by multiple players, awards medals, and publishes the result. It either schedules the next round or enters `gameOver`.
+8. A host rematch resets scores and returns connected players to the lobby. Rooms with no connected players are removed after `EMPTY_ROOM_SECONDS`.
+
+The game phase sequence is:
+
+```text
+lobby -> playing -> roundEnd -> playing ... -> gameOver -> lobby
+```
+
+Round and intermission timers run on the server. Snapshots include `serverNow`,
+`endsAt`, and `nextRoundAt` so browsers can render countdowns against server
+time. A submission received after the round deadline is rejected.
+
+### Socket.IO contract
+
+Client events use acknowledgement callbacks for immediate results. Successful
+room entry returns `{ ok, code, token, username }`; failures return an error or
+reason. A rate-limited event returns `{ ok: false, code: "RATE_LIMITED",
+retryAfter, error, reason }` when the client supplied an acknowledgement.
+
+| Client event | Purpose | Typical payload |
+| --- | --- | --- |
+| `rooms:subscribe` | Subscribe to public-room updates and retrieve the current list. | `{}` |
+| `createRoom` | Create a room and join as its host. | `{ username, name?, maxPlayers, isPublic }` |
+| `joinRoom` | Join or reconnect to a room. | `{ code, username, token? }` |
+| `leaveRoom` | Leave the current room and return to room browsing. | `{}` |
+| `start` | Start a game as the host. | `{ rounds }` |
+| `submit` | Submit a word during the active round. | `{ word }` |
+| `playAgain` | Reset a completed game as the host. | `{}` |
+
+Server push events are `state` (a player-specific room/game snapshot) and
+`rooms` (the public room list). Player snapshots include that player's own words;
+other submissions are only included in the result after a round ends.
+
+### State and validation rules
+
+- `RoomManager.rooms` maps room codes to `Game` instances. Each game's `players` map is keyed by an opaque token; player records hold connection state, score totals, round scores, medals, and current-round words.
+- The room host is the earliest connected player selected by `Game.ensureHost()`. Only the host can start a game, choose the round count, or request a rematch.
+- `Game` enforces phase transitions and timer deadlines. `rules.js` enforces word syntax, minimum length, base-word exclusion, letter counts, and dictionary membership. Scores and medals are calculated server-side.
+- A reconnect token is stored in the browser's per-tab `sessionStorage` and is only useful while the matching in-memory game still exists. Disconnected players are removed from a lobby, but retained during a running game; their submitted words still count toward scoring and duplicate cancellation.
+- `RoomManager` caps the process at 200 rooms; rooms have a player cap of 2-12. Empty rooms receive a close timer that is cancelled if a player reconnects.
+
+### Rate-limit policy
+
+`server.js` keys each 60-second fixed window by the resolved client IP and action.
+The current limits are 30 Socket.IO connections, 5 room creations, 30 joins,
+30 leaves, 60 room-list subscriptions, 10 game starts, 5 rematches, and 120 word
+submissions per IP per minute. Rejected event acknowledgements include a
+`retryAfter` value. The limiter stores at most 20,000 keys; when full it removes
+expired buckets and rejects new keys if capacity is still exhausted. The
+counters are local to one process and are not a substitute for edge/network
+DDoS protection.
 
 ## Putting it online
 
 Any host that runs a long-lived Node process with WebSocket support works (a VPS, Render, Railway, Fly.io and similar). Set `PORT` if the host asks for it; `/healthz` returns `ok` for health checks.
 
 - **Run a single instance.** All rooms live in one process's memory. A restart ends every game, and several instances would need shared state and sticky sessions.
-- **Public names are user-generated.** Usernames and room names are shown to strangers. There is no profanity filter, moderation, accounts or rate limiting beyond a one-room-per-connection rule, a 1.5-second cooldown on creating rooms and the 200-room cap. Add a filter and IP-based rate limits before promoting it widely.
+- **Public names are user-generated.** Usernames and room names are shown to strangers. There is no profanity filter, moderation, or account system. The server applies per-IP Socket.IO connection and event limits, plus a room cap; these do not replace hosting-provider or edge DDoS protection.
