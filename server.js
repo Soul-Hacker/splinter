@@ -7,17 +7,35 @@ const { Server } = require('socket.io');
 const { RoomManager, normalizeCode } = require('./lib/rooms');
 const { loadDictionary } = require('./lib/dictionary');
 const { prepareBaseWords, SOURCE } = require('./lib/baseWords');
+const { FixedWindowRateLimiter } = require('./lib/fixedWindowRateLimiter');
 
 const PORT = Number(process.env.PORT) || 3000;
 const ROUND_SECONDS = Number(process.env.ROUND_SECONDS) || 120;
 const INTERMISSION_SECONDS = Number(process.env.INTERMISSION_SECONDS) || 20;
 const EMPTY_ROOM_SECONDS = Number(process.env.EMPTY_ROOM_SECONDS) || 45;
+const TRUST_PROXY_HOPS = process.env.TRUST_PROXY_HOPS ? Number(process.env.TRUST_PROXY_HOPS) : 0;
+if (!Number.isInteger(TRUST_PROXY_HOPS) || TRUST_PROXY_HOPS < 0) {
+  throw new Error('TRUST_PROXY_HOPS must be a non-negative integer.');
+}
+
+const SOCKET_RATE_LIMITS = {
+  'rooms:subscribe': 60,
+  createRoom: 5,
+  joinRoom: 30,
+  leaveRoom: 30,
+  start: 10,
+  submit: 120,
+  playAgain: 5,
+};
+const SOCKET_CONNECTIONS_PER_MINUTE = 30;
+const rateLimiter = new FixedWindowRateLimiter();
 
 const BROWSER = 'room-browser'; // socket.io room for sockets that are looking at the room list
 
 const app = express();
+app.set('trust proxy', TRUST_PROXY_HOPS);
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, { maxHttpBufferSize: 16 * 1024 });
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/api/config', (_req, res) => res.json({ roundSeconds: ROUND_SECONDS }));
@@ -56,6 +74,37 @@ function reply(ack, payload) {
   if (typeof ack === 'function') ack(payload);
 }
 
+function clientIp(socket) {
+  const remoteAddress = String(socket.handshake.address || 'unknown').replace(/^::ffff:/i, '').toLowerCase();
+  if (TRUST_PROXY_HOPS === 0) return remoteAddress;
+
+  const forwarded = socket.handshake.headers['x-forwarded-for'];
+  if (typeof forwarded !== 'string') return remoteAddress;
+  const addresses = forwarded.split(',').map((address) => address.trim()).filter(Boolean);
+  return addresses[Math.max(0, addresses.length - TRUST_PROXY_HOPS)] || remoteAddress;
+}
+
+function allowSocketEvent(socket, event, ack) {
+  const limit = SOCKET_RATE_LIMITS[event];
+  if (!limit) return true;
+
+  const { allowed, retryAfter } = rateLimiter.consume(`${clientIp(socket)}:${event}`, limit);
+  if (allowed) return true;
+
+  const message = `Too many requests. Try again in ${retryAfter} seconds.`;
+  reply(ack, { ok: false, code: 'RATE_LIMITED', error: message, reason: message, retryAfter });
+  return false;
+}
+
+io.use((socket, next) => {
+  const { allowed, retryAfter } = rateLimiter.consume(
+    `${clientIp(socket)}:connection`,
+    SOCKET_CONNECTIONS_PER_MINUTE
+  );
+  if (allowed) return next();
+  next(new Error(`Too many connections. Try again in ${retryAfter} seconds.`));
+});
+
 const asObject = (value) => (value && typeof value === 'object' ? value : {});
 
 io.on('connection', (socket) => {
@@ -80,11 +129,13 @@ io.on('connection', (socket) => {
   }
 
   socket.on('rooms:subscribe', (_payload, ack) => {
+    if (!allowSocketEvent(socket, 'rooms:subscribe', ack)) return;
     if (!socket.data.room) socket.join(BROWSER);
     reply(ack, { ok: true, rooms: manager.list() });
   });
 
   socket.on('createRoom', (payload, ack) => {
+    if (!allowSocketEvent(socket, 'createRoom', ack)) return;
     if (socket.data.room) return reply(ack, { ok: false, error: 'Leave your current room first.' });
     if (Date.now() - (socket.data.lastCreate || 0) < 1500) {
       return reply(ack, { ok: false, error: 'Slow down a moment, then try again.' });
@@ -97,6 +148,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinRoom', (payload, ack) => {
+    if (!allowSocketEvent(socket, 'joinRoom', ack)) return;
     const data = asObject(payload);
     const code = normalizeCode(data.code);
 
@@ -112,6 +164,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('leaveRoom', (_payload, ack) => {
+    if (!allowSocketEvent(socket, 'leaveRoom', ack)) return;
     const game = currentRoom();
     if (game && socket.data.token) game.disconnect(socket.data.token, socket.id);
     socket.data.room = null;
@@ -121,18 +174,21 @@ io.on('connection', (socket) => {
   });
 
   socket.on('start', (payload, ack) => {
+    if (!allowSocketEvent(socket, 'start', ack)) return;
     const game = currentRoom();
     if (!game) return reply(ack, { ok: false, reason: 'Join a room first.' });
     reply(ack, game.start(socket.data.token, asObject(payload).rounds));
   });
 
   socket.on('submit', (payload, ack) => {
+    if (!allowSocketEvent(socket, 'submit', ack)) return;
     const game = currentRoom();
     if (!game) return reply(ack, { ok: false, reason: 'Join a room first.' });
     reply(ack, game.submit(socket.data.token, asObject(payload).word));
   });
 
   socket.on('playAgain', (_payload, ack) => {
+    if (!allowSocketEvent(socket, 'playAgain', ack)) return;
     const game = currentRoom();
     if (!game) return reply(ack, { ok: false, reason: 'Join a room first.' });
     reply(ack, game.playAgain(socket.data.token));
