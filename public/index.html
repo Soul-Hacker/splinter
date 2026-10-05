@@ -43,6 +43,12 @@
 <body>
   <header class="top">
     <a class="brand" href="/">Spliinter</a>
+    <nav class="primary-nav" aria-label="Main">
+      <a href="/how-to-play.html">How to play</a>
+      <a href="/strategy.html">Strategy</a>
+      <a href="/faq.html">FAQ</a>
+      <a href="/about.html">About</a>
+    </nav>
     <div class="top-right">
       <span id="conn" class="conn" hidden>Reconnecting…</span>
       <span id="roomChip" class="room-chip" hidden></span>
@@ -73,6 +79,92 @@
           <li>When time runs out, a word that two or more players found is crossed out for everyone. Each word only you found earns 1 point.</li>
           <li>The best score in a round wins gold, then silver and bronze. After the last round, the highest total wins the game.</li>
         </ul>
+        <div class="home-content">
+          <section class="home-section">
+            <p class="eyebrow">How a round works</p>
+            <h2>One word for everyone. Two minutes. Only unique finds count.</h2>
+            <p>Everyone in a room gets the same base word and the same server-timed round. Find smaller words using its letters; a letter can appear in your answer only as many times as it appears in the base word. The tiles dim as you use letters, giving you a visual check before you submit.</p>
+            <p>When the timer ends, everyone’s word lists are revealed together. A word submitted by two or more players is crossed out and earns no points. Each word submitted by one player earns that player one point, regardless of its length.</p>
+          </section>
+
+          <section class="home-section">
+            <p class="eyebrow">Worked example</p>
+            <h2>What a round of CHOCOLATE could look like</h2>
+            <p>CHOCOLATE has nine tiles: two Cs, two Os, and one each of H, L, A, T and E. Here is a sample reveal for three players.</p>
+            <div class="table-wrap guide-table-wrap">
+              <table class="standings guide-table home-example-table">
+                <thead><tr><th scope="col">Player</th><th scope="col">Words submitted</th><th scope="col">Points</th></tr></thead>
+                <tbody>
+                  <tr><td>Asha</td><td><span class="chip cancelled">COAT</span> <span class="chip cancelled">TACO</span> <span class="chip cancelled">EACH</span> <span class="chip unique">HOTEL</span> <span class="chip unique">LOCATE</span></td><td>2</td></tr>
+                  <tr><td>Ben</td><td><span class="chip cancelled">COAT</span> <span class="chip cancelled">EACH</span> <span class="chip cancelled">COOL</span> <span class="chip unique">CHEAT</span> <span class="chip unique">TEACH</span></td><td>2</td></tr>
+                  <tr><td>Chloe</td><td><span class="chip cancelled">TACO</span> <span class="chip cancelled">COOL</span> <span class="chip unique">ECHO</span> <span class="chip unique">CHALET</span> <span class="chip unique">COACH</span></td><td>3</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="legend"><span class="chip unique">Green</span> means one player found it: 1 point. <span class="chip cancelled">Crossed out</span> means two or more found it: 0 points for everyone.</p>
+            <p>COAT, TACO, EACH and COOL were shared, so they scored nothing. COACH is legal because CHOCOLATE contains two Cs. LOCAL would be rejected: it needs two Ls, but CHOCOLATE has only one. Chloe wins the round with three points; Asha and Ben tie with two and share silver. Tied medals skip the next rank, so there is no bronze in this example.</p>
+          </section>
+
+          <section class="home-section">
+            <p class="eyebrow">Why it plays differently</p>
+            <h2>Length doesn’t matter. Being the only one who saw it does.</h2>
+            <p>Many word games reward long answers. Spliinter instead gives one point to each word only one player found, so a short, surprising answer can be worth more than a long word everyone spotted.</p>
+            <ul class="home-list">
+              <li><strong>Start with easy words, then move on.</strong> Common finds can still be worth submitting, but expect duplicates in a larger room.</li>
+              <li><strong>Search for word families.</strong> Once you have a stem, test nearby endings and beginnings—but check each form against the available letters and dictionary.</li>
+              <li><strong>Count letters, not just letter types.</strong> LOCAL uses letters that appear in CHOCOLATE, but asks for two Ls where only one is available.</li>
+            </ul>
+            <p>For a repeatable search routine, see the <a href="/strategy.html">word strategy guide</a>. The <a href="/how-to-play.html">complete rules</a> explain validation, scoring and medals.</p>
+          </section>
+
+          <section class="home-section">
+            <p class="eyebrow">Rooms</p>
+            <h2>Play together without accounts or downloads</h2>
+            <div class="home-card-grid">
+              <article class="home-card"><h3>Private by link</h3><p>Create a room and share its code or invite link with friends. Private rooms do not appear in the public room list.</p></article>
+              <article class="home-card"><h3>Public room list</h3><p>Choose whether to list your room publicly. A room accepts players until it reaches its chosen limit or the game starts.</p></article>
+              <article class="home-card"><h3>Host controls</h3><p>The host chooses a room size of 2–12 players and a game length of 1–10 rounds. If the host disconnects, the longest-present connected player takes over.</p></article>
+              <article class="home-card"><h3>Reconnect to a game</h3><p>During a game, refresh in the same browser tab to try to resume with your words and score. Reconnection depends on the room still existing in the running server process.</p></article>
+            </div>
+          </section>
+
+          <section class="home-section">
+            <p class="eyebrow">Fair by design</p>
+            <h2>The server checks every submission</h2>
+            <p>The server enforces the round deadline, checks letter counts and dictionary membership, and scores duplicates after the round. Other players’ submitted words stay hidden until the reveal. The dictionary is loaded by the server from the <code>word-list</code> package, with a small set of additional words; see <a href="/about.html">how the game is built</a> for more detail.</p>
+          </section>
+
+          <section class="home-section">
+            <p class="eyebrow">Get better</p>
+            <h2>Useful pages before your next round</h2>
+            <ul class="home-list">
+              <li><a href="/how-to-play.html">How to play Spliinter</a>: joining rooms, valid words, scoring and medals.</li>
+              <li><a href="/strategy.html">Word game strategy</a>: a practical way to search without losing track of the letter inventory.</li>
+              <li><a href="/faq.html">Frequently asked questions</a>: rejected words, room limits, reconnection and data.</li>
+              <li><a href="/guides/three-letter-words.html">Three-letter word availability</a>: a ranked snapshot from the common-word pool.</li>
+              <li><a href="/guides/prefix-and-suffix-stripping.html">Prefix and suffix search</a>: build word ladders without assuming every form works.</li>
+              <li><a href="/guides/letter-count-traps.html">Letter-count traps</a>: why a word can use familiar letters and still be invalid.</li>
+              <li><a href="/guides/unique-only-scoring.html">Unique-only scoring</a>: how the rule changes your search strategy.</li>
+              <li><a href="/guides/reading-a-base-word.html">How to read a base word</a>: pool measurements and example searches.</li>
+              <li><a href="/guides/host-a-word-game-night.html">Host a remote game night</a>: set up a room and call.</li>
+              <li><a href="/guides/how-word-validation-works.html">How word validation works</a>: what the server checks and when.</li>
+              <li><a href="/guides/choosing-a-word-list.html">The Spliinter word list</a>: source, rules and limitations.</li>
+            </ul>
+          </section>
+
+          <section class="home-section">
+            <p class="eyebrow">Quick answers</p>
+            <h2>Before your first game</h2>
+            <h3>Do I need an account?</h3>
+            <p>No. Choose a username to identify yourself in a room. It is not a permanent account, and the game does not ask you to install an app.</p>
+            <h3>Can I play on my own?</h3>
+            <p>A room needs at least two players to start. Join a public room if one is available, or create one and share its link with someone.</p>
+            <h3>Why was my word rejected?</h3>
+            <p>It may be too short, use a letter too many times, match the base word, or be missing from the dictionary. Read <a href="/guides/letter-count-traps.html">why letter counts matter</a> or visit the <a href="/faq.html">FAQ</a>.</p>
+            <h3>What happens if I refresh?</h3>
+            <p>The same browser tab tries to reconnect using temporary session information. It can resume only while the original room remains in the running server’s memory; a server restart or closed room cannot be recovered.</p>
+          </section>
+        </div>
       </section>
 
       <!-- 2. Room browser -->
@@ -210,7 +302,7 @@
     </div>
   </div>
 
-  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Site"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Word strategy</a><a href="/faq.html">FAQ</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
+  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Site"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Word strategy</a><a href="/faq.html">FAQ</a><a href="/guides/three-letter-words.html">Three-letter words</a><a href="/guides/prefix-and-suffix-stripping.html">Word ladders</a><a href="/guides/letter-count-traps.html">Letter-count traps</a><a href="/guides/unique-only-scoring.html">Unique scoring</a><a href="/guides/reading-a-base-word.html">Read a base word</a><a href="/guides/host-a-word-game-night.html">Host a game night</a><a href="/guides/how-word-validation-works.html">Word validation</a><a href="/guides/choosing-a-word-list.html">Dictionary</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
   <div id="cookieBanner" class="cookie-banner" hidden role="region" aria-label="Cookie choices"><p>Spliinter uses essential browser storage to keep the game working. Optional advertising or analytics technologies will only be used with your consent where required.</p><div class="cookie-actions"><button id="cookieReject" class="btn btn-outline" type="button">Reject optional</button><button id="cookieAccept" class="btn" type="button">Accept optional</button></div></div>
 
   <script src="/socket.io/socket.io.js"></script>

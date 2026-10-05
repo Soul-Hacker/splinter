@@ -49,6 +49,8 @@ p { margin: 0; }
   font-family: var(--font-display); font-weight: 800; font-size: 1.6rem;
   letter-spacing: -0.02em; color: var(--ink); text-decoration: none;
 }
+.primary-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; }
+.primary-nav a { color: var(--focus); font-weight: 700; }
 .top-right { display: flex; gap: 10px; align-items: center; }
 .you-chip {
   background: var(--ink); color: #fff; padding: 4px 12px; border-radius: 999px;
@@ -107,6 +109,18 @@ input:disabled { background: var(--line); }
   margin: 8px 0 0; padding: 0 0 0 1.1em; color: var(--ink-soft); max-width: 62ch;
   display: flex; flex-direction: column; gap: 8px;
 }
+.home-content { display: flex; flex-direction: column; gap: 28px; margin-top: 12px; max-width: 860px; }
+.home-section { display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--line); padding-top: 22px; }
+.home-section h2 { font-size: clamp(1.35rem, 3vw, 1.8rem); font-weight: 800; }
+.home-section p { color: var(--ink-soft); max-width: 72ch; }
+.home-section a { color: var(--focus); font-weight: 700; }
+.home-list { margin: 0; padding-left: 1.25em; color: var(--ink-soft); display: flex; flex-direction: column; gap: 8px; max-width: 72ch; }
+.home-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.home-card { display: flex; flex-direction: column; gap: 8px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.home-card h3 { font-size: 1.05rem; }
+.home-card p { font-size: 0.97rem; }
+.home-example-table { min-width: 620px; }
+.home-example-table td:nth-child(2) { line-height: 2.5; }
 
 /* ---------- stage (the base word) ---------- */
 .stage {
@@ -378,6 +392,8 @@ select {
 .cookie-banner .btn-outline { background: transparent; color: #fff; border-color: #fff; }
 .cookie-banner .btn-outline:hover:not(:disabled) { color: var(--ink); background: #fff; }
 @media (max-width: 640px) {
+  .top { flex-wrap: wrap; }
+  .primary-nav { order: 3; flex-basis: 100%; justify-content: flex-start; padding: 6px 0; }
   .legal-page { padding-top: 40px; }
   .cookie-banner { align-items: stretch; flex-direction: column; gap: 12px; }
   .cookie-actions { justify-content: flex-end; }

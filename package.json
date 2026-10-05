@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "load-test": "node scripts/load.js"
   },
   "engines": {
     "node": ">=18"
@@ -16,5 +17,8 @@
     "express": "^5.1.0",
     "socket.io": "^4.8.0",
     "word-list": "^4.1.0"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.4"
   }
 }

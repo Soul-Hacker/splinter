@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6G16BK3GC0"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-6G16BK3GC0');
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical look at how Spliinter checks word submissions, counts letters, uses its dictionary, handles duplicates and reconnects players.">
+  <link rel="canonical" href="https://spliinter.in/guides/how-word-validation-works.html">
+  <title>How Spliinter validates a word | Spliinter</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="legal-body">
+  <header class="top"><a class="brand" href="/">Spliinter</a><nav class="primary-nav" aria-label="Main"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Strategy</a><a href="/faq.html">FAQ</a><a href="/about.html">About</a></nav></header>
+  <main class="legal-page">
+    <p class="eyebrow">By Silent Engineer · Updated 05 October 2026</p>
+    <h1 class="hero hero-sm">How Spliinter validates a word</h1>
+    <p class="lede">Word checks happen on the server, not just in the page. This keeps the dictionary, letter rules, round deadline and scoring consistent for everyone in a room.</p>
+
+    <section class="legal-section"><h2>What happens when you submit</h2><p>The browser sends the typed word to the game server over Socket.IO. The server first checks that the player is in a room and that the room is in the playing phase and still before its deadline. If play is over, the word is rejected without entering the round results.</p><p>For an active round, the server normalizes the text to lowercase and trims surrounding whitespace. It rejects empty input, input longer than 40 characters, and characters outside the English letters a to z. It then checks the minimum length, base-word exclusion, available letter counts and dictionary membership. Finally, it prevents the same player from adding the same accepted word twice in one round.</p></section>
+
+    <section class="legal-section"><h2>Count letters, not just their presence</h2><p>The validator builds a count for each letter in the base word, then walks the candidate answer. A candidate is invalid if it asks for a letter that is absent or uses more copies than the base contains. That is why <strong>LOCAL</strong> fails for <strong>CHOCOLATE</strong>: there is an L, but only one, and LOCAL needs two.</p><p>A simplified version of that inventory check looks like this:</p><pre><code>function fitsInventory(word, baseWord) {
+  const available = new Map();
+  for (const letter of baseWord) {
+    available.set(letter, (available.get(letter) || 0) + 1);
+  }
+
+  for (const letter of word) {
+    const remaining = available.get(letter) || 0;
+    if (remaining === 0) return false;
+    available.set(letter, remaining - 1);
+  }
+  return true;
+}</code></pre><p>The production rule code uses the same idea: count the base letters once for the check, then reduce the remaining count as each answer letter is consumed.</p></section>
+
+    <section class="legal-section"><h2>The dictionary is loaded at startup</h2><p>At process startup, Spliinter reads the word file exposed by the <a href="https://www.npmjs.com/package/word-list">word-list npm package</a>, normalizes entries to lowercase, removes empty lines and duplicates, and builds an in-memory set for membership checks. The implementation adds three explicit entries to that set. The same loaded set is used by every room until the server restarts.</p><p>A quick dictionary lookup cannot decide whether an answer is fair by itself: the server checks the base word’s inventory first. A word in the dictionary may still be rejected because it is too short, is the base word, or requires unavailable letters. There is no separate player-selected dictionary or browser-side exception list.</p></section>
+
+    <section class="legal-section"><h2>Why the browser is not the referee</h2><p>The browser provides the tiles, input field and countdown display, but the server owns the game state. It sets the round end time and validates submitted words. A browser clock can render a convenient countdown using server timestamps, but changing a local display does not extend the server’s deadline.</p><p>The server also keeps each player’s current words private from other players during the round. Other players receive a word count, not a copy of those submissions. This prevents the results page from being determined by what another browser chooses to show.</p></section>
+
+    <section class="legal-section"><h2>Duplicates are decided after the round</h2><p>Each player’s accepted words are stored in a set for that round, so one player cannot score the same word twice. When the timer ends, the server counts how many different players submitted each word. A word found by exactly one player earns one point; a word found by two or more players is marked cancelled for everyone who found it.</p><p>The server then calculates round scores, assigns medals to positive scores in rank order, updates game totals and sends the reveal. The same word may be tried again in another round because the duplicate comparison is scoped to a single round.</p></section>
+
+    <section class="legal-section"><h2>Reconnection and in-memory state</h2><p>When a player joins, the server creates an opaque reconnect token. The browser keeps the token with the username and room information in the current tab’s session storage. After a refresh or a temporary network interruption, the browser can present that token to reattach to the matching player while the room and server process still exist.</p><p>The token is not a permanent account and is not a backup. Room state—including words and scores—lives in server memory. A room is removed after it has been empty for the configured delay, and a server restart clears all rooms immediately. A reconnect token cannot restore state that no longer exists.</p></section>
+
+    <section class="legal-section"><h2>What is measured</h2><p>The server does not write rejected-word rankings or a history of submitted word text to a database. Optional Google Analytics events can count actions such as word submissions after analytics consent is granted; the event does not include the word, username or room code. See the <a href="/privacy.html">Privacy Policy</a> for the browser-storage and analytics details.</p></section>
+
+    <section class="legal-section"><h2>Related guides</h2><p><a href="/">Play a round</a>, review <a href="/guides/letter-count-traps.html">letter-count traps</a>, read <a href="/how-to-play.html">the player rules</a>, or visit the <a href="/about.html">About page</a> for base-word selection details.</p></section>
+  </main>
+  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Site"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Word strategy</a><a href="/faq.html">FAQ</a><a href="/guides/three-letter-words.html">Three-letter words</a><a href="/guides/prefix-and-suffix-stripping.html">Word ladders</a><a href="/guides/letter-count-traps.html">Letter-count traps</a><a href="/guides/unique-only-scoring.html">Unique scoring</a><a href="/guides/reading-a-base-word.html">Read a base word</a><a href="/guides/host-a-word-game-night.html">Host a game night</a><a href="/guides/how-word-validation-works.html">Word validation</a><a href="/guides/choosing-a-word-list.html">Dictionary</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
+  <div id="cookieBanner" class="cookie-banner" hidden role="region" aria-label="Cookie choices"><p>Spliinter uses essential browser storage to keep the game working. Optional advertising or analytics technologies will only be used with your consent where that is required.</p><div class="cookie-actions"><button id="cookieReject" class="btn btn-outline" type="button">Reject optional</button><button id="cookieAccept" class="btn" type="button">Accept optional</button></div></div>
+  <script src="/cookie-consent.js"></script>
+  <script src="/analytics.js"></script>
+</body>
+</html>

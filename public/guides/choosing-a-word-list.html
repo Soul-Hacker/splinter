@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6G16BK3GC0"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-6G16BK3GC0');
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="See which dictionary Spliinter currently uses, how it validates spellings and inflections, and how to report a questionable word.">
+  <link rel="canonical" href="https://spliinter.in/guides/choosing-a-word-list.html">
+  <title>Choosing a dictionary for Spliinter | Spliinter</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="legal-body">
+  <header class="top"><a class="brand" href="/">Spliinter</a><nav class="primary-nav" aria-label="Main"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Strategy</a><a href="/faq.html">FAQ</a><a href="/about.html">About</a></nav></header>
+  <main class="legal-page">
+    <p class="eyebrow">By Silent Engineer · Updated 05 October 2026</p>
+    <h1 class="hero hero-sm">Choosing a dictionary for a word game</h1>
+    <p class="lede">A multiplayer word game needs one shared answer to a simple question: is this spelling in the list? Spliinter uses a general-purpose English word-list package and combines it with letter-count and round rules on the server.</p>
+
+    <section class="legal-section"><h2>The current source</h2><p>Spliinter loads the <a href="https://www.npmjs.com/package/word-list">word-list npm package</a> at startup. The installed package version is 4.1.0 and its package metadata declares the MIT license. Its text file is loaded into an array for selecting words and a set for fast membership checks. The server adds three explicit entries to the loaded list; the current process reports 274,140 unique entries after that merge.</p><p>The package’s license declaration describes the package. It should not be confused with a claim that every English dictionary or word corpus has the same license or provenance. If the source list or distribution method changes, its notices and licensing should be reviewed again.</p></section>
+
+    <section class="legal-section"><h2>What acceptance means</h2><p>A word is accepted when it passes all game checks: it is at least three letters, is not the full base word, uses only available letters without exceeding their counts, and is present in the loaded set. Spliinter does not ask a second dictionary or a human judge to approve each submission during a round.</p><p>The list is general-purpose, so it includes entries some players will not recognize. The server does not apply a separate filter that classifies an entry as a proper noun, abbreviation, regional spelling or offensive word. Membership in the loaded word set and the game rules decide acceptance. This also means a familiar spelling can be rejected if that exact form is not in the list.</p></section>
+
+    <section class="legal-section"><h2>Inflections and spelling variants</h2><p>Plural, past-tense and other forms are not created automatically by a grammar engine. Each candidate form must have its own dictionary entry and fit the base word’s letters. A stem in the dictionary does not guarantee that its plural or <em>-ING</em> form is also accepted.</p><p>The game uses the entries it loaded; it does not convert between British and American spellings or normalize alternate spellings to one preferred form. If two forms are present in the list, both can be considered, subject to the other checks.</p></section>
+
+    <section class="legal-section"><h2>How base words are chosen</h2><p>In the default configuration, base-word candidates are 9–12 letters long and filtered to avoid words that are just inflections of shorter dictionary entries. The picker also checks that a candidate can form at least 120 smaller dictionary words using the same inventory rule. If the requested game cannot be filled from random candidates, it can use the hand-picked common-word pool. The explicit <code>BASE_WORDS=common</code> configuration selects from that pool directly.</p><p>Choosing a base word and validating a player answer are related but separate tasks. The base-word picker favors enough possible subwords for a round; the answer validator checks one submitted word against the current base and loaded list.</p></section>
+
+    <section class="legal-section"><h2>Why use a broad list?</h2><p>A broad shared list gives all players the same deterministic rule and avoids waiting for a human decision while the clock is running. The tradeoff is that some accepted words may be obscure. A curated competition dictionary could make the vocabulary more predictable, but it would also require a clearly chosen edition, updates and rules for disputed words.</p><p>For now, Spliinter exposes the general-purpose list’s behavior rather than claiming every accepted entry is common or universally accepted in every word game. The best report includes the exact spelling and base word so the current check can be reproduced.</p></section>
+
+    <section class="legal-section"><h2>Reporting an unexpected result</h2><p>Email <a href="mailto:contact@spliinter.in">contact@spliinter.in</a> with the candidate and base word, and say whether the server accepted or rejected it. Do not include private player submissions from someone else. The game does not currently publish a rejection leaderboard or monthly counts, so this report is a request for review rather than an item in a public statistics feed.</p></section>
+
+    <section class="legal-section"><h2>Changelog</h2><ul class="guide-list"><li><strong>05 October 2026:</strong> documented the current package, runtime entry count and base-word selection behavior. No dictionary entries were changed for this article.</li></ul></section>
+
+    <section class="legal-section"><h2>Related guides</h2><p><a href="/">Play a round</a>, read <a href="/guides/how-word-validation-works.html">how the server validates a word</a>, practise <a href="/guides/letter-count-traps.html">letter counts</a>, or learn <a href="/guides/prefix-and-suffix-stripping.html">how to search word families</a>.</p></section>
+  </main>
+  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Site"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Word strategy</a><a href="/faq.html">FAQ</a><a href="/guides/three-letter-words.html">Three-letter words</a><a href="/guides/prefix-and-suffix-stripping.html">Word ladders</a><a href="/guides/letter-count-traps.html">Letter-count traps</a><a href="/guides/unique-only-scoring.html">Unique scoring</a><a href="/guides/reading-a-base-word.html">Read a base word</a><a href="/guides/host-a-word-game-night.html">Host a game night</a><a href="/guides/how-word-validation-works.html">Word validation</a><a href="/guides/choosing-a-word-list.html">Dictionary</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
+  <div id="cookieBanner" class="cookie-banner" hidden role="region" aria-label="Cookie choices"><p>Spliinter uses essential browser storage to keep the game working. Optional advertising or analytics technologies will only be used with your consent where required.</p><div class="cookie-actions"><button id="cookieReject" class="btn btn-outline" type="button">Reject optional</button><button id="cookieAccept" class="btn" type="button">Accept optional</button></div></div>
+  <script src="/cookie-consent.js"></script>
+  <script src="/analytics.js"></script>
+</body>
+</html>

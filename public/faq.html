@@ -51,6 +51,62 @@
             "@type": "Answer",
             "text": "No. Spliinter does not require an account. Your username is used only to identify you in the current room, and room state is held temporarily in server memory."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Spliinter free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "There is no purchase or subscription required to play Spliinter."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which dictionary does Spliinter use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Spliinter loads the word-list npm package as a general-purpose English word list and adds three explicit words. A candidate must also follow the base word's letter counts and the game's other rules."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How are base words chosen?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In the default configuration, base words are 9 to 12 letters long, are not filtered inflections of shorter words, and have at least 120 valid smaller words according to the game's dictionary and letter-count rules. A configurable common-word pool is also available."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Spliinter work on a phone?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Spliinter runs in a modern web browser on phones, tablets and desktop computers. There is nothing to download."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What do you store about me?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The current browser tab stores your username and reconnect details in session storage. The server temporarily keeps room, player, submission and score state in memory while a room exists. Optional Google Analytics measurement is disabled unless you accept optional cookies. See the Privacy Policy for details."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I play with more than twelve people?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A single room supports up to twelve players. You can create separate rooms for a larger group."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use the same word in two different rounds?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Duplicate scoring is calculated within each round, so a word can be submitted again in a later round."
+          }
         }
       ]
     }
@@ -62,21 +118,28 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="legal-body">
-  <header class="top"><a class="brand" href="/">Spliinter</a><a class="btn-quiet" href="/">Back to game</a></header>
+  <header class="top"><a class="brand" href="/">Spliinter</a><nav class="primary-nav" aria-label="Main"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Strategy</a><a href="/faq.html">FAQ</a><a href="/about.html">About</a></nav></header>
   <main class="legal-page">
     <p class="eyebrow">Common questions</p>
     <h1 class="hero hero-sm">Spliinter FAQ</h1>
     <p class="lede">A quick reference for rooms, rules, scoring, and what happens to your game when you refresh the page.</p>
     <section class="legal-section"><h2>How many people can play?</h2><p>A room needs at least two players to start and supports up to twelve. The host chooses the room limit when creating it.</p></section>
     <section class="legal-section"><h2>How long is a round?</h2><p>The standard round lasts two minutes. The host chooses how many rounds to play, from one to ten. The server controls the timer for every player.</p></section>
-    <section class="legal-section"><h2>Why was my word rejected?</h2><p>The word may be shorter than three letters, may use a letter too many times, may not be in the game's dictionary, or may be the base word itself. The server validates submissions using the same rules for everyone.</p></section>
+    <section class="legal-section"><h2>Why was my word rejected?</h2><p>The word may be shorter than three letters, may use a letter too many times, may not be in the game's dictionary, or may be the base word itself. The server validates submissions using the same rules for everyone. See <a href="/guides/letter-count-traps.html">letter-count examples</a> and <a href="/guides/how-word-validation-works.html">the validation guide</a>.</p></section>
     <section class="legal-section"><h2>Why did my word get crossed out?</h2><p>A word is crossed out when at least two players submitted it in the same round. Shared words score zero, while a word found only by you earns one point.</p></section>
     <section class="legal-section"><h2>Can I join a game already in progress?</h2><p>New players can join a waiting room before it starts. A room that is full or already playing is not open to new players, but someone who was disconnected can reconnect with the same browser session.</p></section>
     <section class="legal-section"><h2>What happens if I refresh?</h2><p>Spliinter keeps a temporary room token in session storage for the current browser tab. After a refresh or brief connection drop, the game attempts to resume your place. Closing the tab or clearing storage removes that local reconnect information.</p></section>
     <section class="legal-section"><h2>Are usernames accounts?</h2><p>No. Spliinter does not require an account. Your username is used only to identify you in the current room, and room state is held temporarily in server memory.</p></section>
-    <section class="legal-section"><h2>How do I report a problem?</h2><p>Send support or accessibility feedback to <a href="mailto:supportbacktick@gmail.com">supportbacktick@gmail.com</a>. For data questions, see the <a href="/privacy.html">Privacy Policy</a>.</p></section>
+    <section class="legal-section"><h2>How do I report a problem?</h2><p>Send support or accessibility feedback to <a href="mailto:contact@spliinter.in">contact@spliinter.in</a>. For a game issue, include the room code, approximate time and what happened. For data questions, see the <a href="/privacy.html">Privacy Policy</a>.</p></section>
+    <section class="legal-section"><h2>Is Spliinter free?</h2><p>There is no purchase or subscription required to play Spliinter.</p></section>
+    <section class="legal-section"><h2>Which dictionary does Spliinter use?</h2><p>Spliinter loads the <a href="https://www.npmjs.com/package/word-list">word-list npm package</a> as a general-purpose English word list and adds three explicit words. A candidate must also follow the base word’s letter counts and the game’s other rules. If you think a word was wrongly accepted or rejected, email the word and the base word to <a href="mailto:contact@spliinter.in">contact@spliinter.in</a>.</p></section>
+    <section class="legal-section"><h2>How are base words chosen?</h2><p>In the default configuration, base words are 9 to 12 letters long, are not filtered inflections of shorter words, and have at least 120 valid smaller words according to the game’s dictionary and letter-count rules. A configurable common-word pool is also available. See <a href="/about.html">how the game works</a> for details.</p></section>
+    <section class="legal-section"><h2>Does Spliinter work on a phone?</h2><p>Spliinter runs in a modern web browser on phones, tablets and desktop computers. There is nothing to download.</p></section>
+    <section class="legal-section"><h2>What do you store about me?</h2><p>The current browser tab stores your username and reconnect details in session storage. The server temporarily keeps room, player, submission and score state in memory while a room exists. Optional Google Analytics measurement is disabled unless you accept optional cookies. See the <a href="/privacy.html">Privacy Policy</a> for details.</p></section>
+    <section class="legal-section"><h2>Can I play with more than twelve people?</h2><p>A single room supports up to twelve players. You can create separate rooms for a larger group.</p></section>
+    <section class="legal-section"><h2>Can I use the same word in two different rounds?</h2><p>Yes. Duplicate scoring is calculated within each round, so a word can be submitted again in a later round.</p></section>
   </main>
-  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Site"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Word strategy</a><a href="/faq.html">FAQ</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
+  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Site"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Word strategy</a><a href="/faq.html">FAQ</a><a href="/guides/three-letter-words.html">Three-letter words</a><a href="/guides/prefix-and-suffix-stripping.html">Word ladders</a><a href="/guides/letter-count-traps.html">Letter-count traps</a><a href="/guides/unique-only-scoring.html">Unique scoring</a><a href="/guides/reading-a-base-word.html">Read a base word</a><a href="/guides/host-a-word-game-night.html">Host a game night</a><a href="/guides/how-word-validation-works.html">Word validation</a><a href="/guides/choosing-a-word-list.html">Dictionary</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
   <div id="cookieBanner" class="cookie-banner" hidden role="region" aria-label="Cookie choices"><p>Spliinter uses essential browser storage to keep the game working. Optional advertising or analytics technologies will only be used with your consent where required.</p><div class="cookie-actions"><button id="cookieReject" class="btn btn-outline" type="button">Reject optional</button><button id="cookieAccept" class="btn" type="button">Accept optional</button></div></div>
   <script src="cookie-consent.js"></script>
   <script src="analytics.js"></script>

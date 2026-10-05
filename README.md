@@ -5,10 +5,10 @@ A real-time multiplayer word game. Everyone in a room gets the same long word an
 Node.js + Socket.io on the server, plain HTML/CSS/JavaScript on the client. No database: all state lives in server memory.
 
 The multiplayer app does not load advertising. Public editorial pages such as
-`/how-to-play.html`, `/strategy.html`, and `/faq.html` are separate static pages
-and are listed in `public/sitemap.xml`. Keep any future advertising limited to
-these substantive pages, never to the room browser, lobby, round, results, or
-standings screens.
+`/how-to-play.html`, `/strategy.html`, `/faq.html`, and the articles under
+`/guides/` are separate static pages and are listed in `public/sitemap.xml`.
+Keep any future advertising limited to these substantive pages, never to the
+room browser, lobby, round, results, or standings screens.
 
 ### Google Analytics
 
@@ -31,6 +31,36 @@ npm start
 Open http://localhost:3000 in two browser tabs. Each tab is its own player (the session is kept per tab), so you can test alone: pick a username in each tab, create a room in one, join it from the other with the room code, then press **Start game** as the host.
 
 To play with other people on the same Wi-Fi, run the server on your machine and have them open `http://<your-local-IP>:3000`.
+
+### Load test
+
+Install dependencies, start the local server in one terminal, then run the load
+test in a second terminal. By default it targets `http://127.0.0.1:3000`, opens
+five Socket.IO clients, and sends concurrent requests to the homepage and
+`/api/config` for 15 seconds.
+
+```bash
+npm start
+# In another terminal:
+npm run load-test -- --duration 15 --http-concurrency 5 --socket-clients 5
+```
+
+The report includes HTTP requests per second, status codes, p50/p95 latency,
+Socket.IO connection latency, and room-list event acknowledgements. To probe the
+60-per-IP-per-minute room-list limit, use a fresh local server process:
+
+```bash
+npm run load-test -- --duration 5 --http-concurrency 5 --socket-clients 5 --probe-event-limit
+```
+
+The probe sends extra read-only room-list subscriptions; it does not create
+rooms or submit game words. Its results include any requests already counted in
+the current fixed window, so restart the local server before a clean repeat.
+The script refuses remote targets unless `--allow-remote` is provided, and then
+caps the run at three HTTP workers, three sockets, and 30 seconds. Use that only
+with a staging service you control, not production without an approved test
+window. Local benchmark numbers describe your development machine, not expected
+production capacity. See `npm run load-test -- --help` for options.
 
 ### Settings
 
