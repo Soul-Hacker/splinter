@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6G16BK3GC0"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-6G16BK3GC0');
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Learn why words such as LOCAL are rejected in Spliinter, how to count repeated letters, and practise with verified examples.">
+  <link rel="canonical" href="https://spliinter.in/guides/letter-count-traps.html">
+  <title>Letter-count traps: why LOCAL isn't in CHOCOLATE | Spliinter</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="legal-body">
+  <header class="top"><a class="brand" href="/">Spliinter</a><nav class="primary-nav" aria-label="Main"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Strategy</a><a href="/faq.html">FAQ</a><a href="/about.html">About</a></nav></header>
+  <main class="legal-page">
+    <p class="eyebrow">By Silent Engineer · Updated 05 October 2026</p>
+    <h1 class="hero hero-sm">Letter-count traps: why LOCAL isn’t in CHOCOLATE</h1>
+    <p class="lede">A word can contain only letters that appear in the base word—and still be invalid. The missing check is how many times each letter appears.</p>
+
+    <section class="legal-section"><h2>The letter-inventory rule</h2><p>Think of the base word as a small inventory of tiles. To make an answer, you can spend each tile once. If the base word contains two Es, an answer may use up to two Es. If it contains one L, every answer is limited to one L. You cannot reuse a tile just because its letter is present.</p><p>For <strong>CHOCOLATE</strong>, the inventory is two Cs, two Os, and one each of H, L, A, T and E. <strong>COACH</strong> is legal because it uses each of its letters no more often than that. <strong>LOCAL</strong> is not: it asks for two Ls, but only one L is available. The word is rejected even though L, O, C and A all occur in CHOCOLATE.</p><p>Passing the inventory check is not enough by itself. A submitted word must also be at least three letters long, not be the base word itself, and appear in Spliinter’s dictionary. The server applies these checks for every player.</p></section>
+
+    <section class="legal-section"><h2>Use the dimmed tiles as a warning</h2><p>While you type, the letter tiles dim as their available copies are used. Watch for a letter whose copies are all dimmed before you type it again. The tiles help you check the inventory visually; they do not decide whether a word is in the dictionary or whether the round has ended. The server remains the final checker when you submit.</p><p>A quick mental check is to compare repeated letters first. If your answer needs two Ls, locate both L tiles in the base word before spending time checking the rest of the spelling.</p></section>
+
+    <section class="legal-section"><h2>Common repeat-letter traps</h2><p>These are real dictionary words that fail the letter-count rule for the base word shown. In each case, the named letters are present, but the answer needs more copies than the base word supplies.</p><ul class="guide-list"><li><strong>CHOCOLATE → LOCAL:</strong> two Ls needed; one available.</li><li><strong>CHOCOLATE → ALCOHOL:</strong> two Ls needed; one available.</li><li><strong>CHOCOLATE → CACAO:</strong> two As needed; one available.</li><li><strong>PLAYGROUND → ADD:</strong> two Ds needed; one available.</li><li><strong>PLAYGROUND → GRANNY:</strong> two Ns needed; one available.</li><li><strong>GENERATIONS → GENERATE:</strong> three Es needed; two available.</li><li><strong>GENERATIONS → SENATORS:</strong> two Ss needed; one available.</li><li><strong>EXPLANATION → EXPIATION:</strong> two Is needed; one available.</li><li><strong>WATERMELON → MELLOW:</strong> two Ls needed; one available.</li><li><strong>WATERMELON → MANNER:</strong> two Ns needed; one available.</li></ul><p>The dictionary may know these words perfectly well. That does not make them playable from a base word that lacks enough copies of the required letters.</p></section>
+
+    <section class="legal-section"><h2>A ten-second check before Enter</h2><ol class="guide-list"><li>Read the candidate from left to right and tally any repeated letters.</li><li>Compare those counts with the base word, paying particular attention to doubled consonants and vowels.</li><li>Check that every letter is present and the answer is shorter than the base word.</li><li>Submit it and use the server’s response as the final validity check.</li></ol><p>This does not need to become a slow count for every word. Start with letters you have already used in another candidate; repeats are where a letter inventory most often gets misread.</p></section>
+
+    <section class="legal-section"><h2>Practice: find the inventory trap</h2><p>Each answer below is a dictionary word, but it cannot be made from that base word. Which repeated letter causes the problem?</p><ul class="guide-list"><li>CHOCOLATE → <strong>ACETAL</strong></li><li>PLAYGROUND → <strong>DOGGED</strong></li><li>GENERATIONS → <strong>SINGERS</strong></li><li>EXPLANATION → <strong>ALIENATION</strong></li><li>WATERMELON → <strong>TATTLE</strong></li></ul><details><summary>Show the answers</summary><ul class="guide-list"><li><strong>ACETAL:</strong> two As, but CHOCOLATE has one.</li><li><strong>DOGGED:</strong> two Ds and two Gs, but PLAYGROUND has one of each.</li><li><strong>SINGERS:</strong> two Ss, but GENERATIONS has one.</li><li><strong>ALIENATION:</strong> two Is, but EXPLANATION has one.</li><li><strong>TATTLE:</strong> three Ts, but WATERMELON has one.</li></ul></details><p>Each trap was checked against Spliinter’s current server dictionary and letter-count validator. A dictionary update could change word membership, but it would not change the inventory rule.</p></section>
+
+    <section class="legal-section"><h2>Related guides</h2><p><a href="/">Play a round</a>, read <a href="/how-to-play.html">the full rules</a>, learn <a href="/guides/how-word-validation-works.html">how the server validates a word</a>, or use the <a href="/strategy.html">word-search strategy</a> guide.</p></section>
+  </main>
+  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Site"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Word strategy</a><a href="/faq.html">FAQ</a><a href="/guides/three-letter-words.html">Three-letter words</a><a href="/guides/prefix-and-suffix-stripping.html">Word ladders</a><a href="/guides/letter-count-traps.html">Letter-count traps</a><a href="/guides/unique-only-scoring.html">Unique scoring</a><a href="/guides/reading-a-base-word.html">Read a base word</a><a href="/guides/host-a-word-game-night.html">Host a game night</a><a href="/guides/how-word-validation-works.html">Word validation</a><a href="/guides/choosing-a-word-list.html">Dictionary</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
+  <div id="cookieBanner" class="cookie-banner" hidden role="region" aria-label="Cookie choices"><p>Spliinter uses essential browser storage to keep the game working. Optional advertising or analytics technologies will only be used with your consent where required.</p><div class="cookie-actions"><button id="cookieReject" class="btn btn-outline" type="button">Reject optional</button><button id="cookieAccept" class="btn" type="button">Accept optional</button></div></div>
+  <script src="/cookie-consent.js"></script>
+  <script src="/analytics.js"></script>
+</body>
+</html>

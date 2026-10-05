@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6G16BK3GC0"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-6G16BK3GC0');
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Use a systematic prefix and suffix search to find more playable words in Spliinter without assuming every word form is valid.">
+  <link rel="canonical" href="https://spliinter.in/guides/prefix-and-suffix-stripping.html">
+  <title>Prefix and suffix stripping for word games | Spliinter</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="legal-body">
+  <header class="top"><a class="brand" href="/">Spliinter</a><nav class="primary-nav" aria-label="Main"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Strategy</a><a href="/faq.html">FAQ</a><a href="/about.html">About</a></nav></header>
+  <main class="legal-page">
+    <p class="eyebrow">By Silent Engineer · Updated 05 October 2026</p>
+    <h1 class="hero hero-sm">Prefix and suffix stripping: a systematic way to find hidden words</h1>
+    <p class="lede">Randomly scanning the same base word can stop producing ideas after the obvious finds. A word-family ladder gives you a repeatable next move: find a stem, then test one change at a time.</p>
+
+    <section class="legal-section"><h2>Why stems help</h2><p>A long base word can contain familiar beginnings and endings. If you first recognize a shorter word inside it, you can ask whether a plural, verb form, agent noun or prefix variant also fits. This narrows the search: you are checking a small set of plausible changes rather than rebuilding a word from scratch every time.</p><p>The important word is <em>test</em>. A language pattern is a prompt for a candidate, not proof that Spliinter accepts it. Each form still needs the right letter counts and dictionary entry.</p></section>
+
+    <section class="legal-section"><h2>A suffix ladder</h2><p>Start from a stem and look for endings that add letters already available in the base. Try one change at a time:</p><ul class="guide-list"><li><strong>-S:</strong> a plural or third-person form needs an S. Confirm the stem plus S is a dictionary word.</li><li><strong>-ED:</strong> a past-tense form may add E and D, or only D after a final E. Check spelling changes rather than simply appending letters.</li><li><strong>-ER:</strong> an agent or comparative form needs E and R, but not every stem takes this ending.</li><li><strong>-ING:</strong> the ending needs I, N and G; some stems also change spelling or drop a final E.</li><li><strong>-LY:</strong> look for an adjective that can take L and Y, then verify the resulting word.</li><li><strong>-EST:</strong> check whether the stem can take E, S and T, including any spelling change.</li><li><strong>-ION or -NESS:</strong> these longer endings can reveal words, but they consume several letters and are easier to overcount.</li></ul><p>Do not spend time trying every ending on every stem. Prefer forms you know or can verify quickly, then use the tile display to check repeated letters.</p></section>
+
+    <section class="legal-section"><h2>Prefixes work the same way</h2><p>Look for prefixes such as <strong>RE-</strong>, <strong>UN-</strong>, <strong>IN-</strong>, <strong>DE-</strong>, <strong>PRE-</strong>, <strong>OUT-</strong> and <strong>OVER-</strong> when their letters are available. If you have a word such as <strong>REASON</strong> inside GENERATIONS, you can test whether another available letter makes a longer dictionary word, as in <strong>TREASON</strong>. The added T is available, and both words pass the current game validator.</p><p>A prefix can also make a plausible-looking string that is not a dictionary entry. Do not treat a familiar prefix as a guarantee.</p></section>
+
+    <section class="legal-section"><h2>Worked ladder: GENERATIONS</h2><p>GENERATIONS has eleven letters: two Es, two Ns, and one each of G, R, A, T, I, O and S. The following candidates pass the current server’s dictionary and letter-count checks:</p><ul class="guide-list"><li><strong>RATION → RATIONS:</strong> the plural adds the one available S.</li><li><strong>NATION → NATIONS:</strong> the base has two Ns, so both forms fit the letter inventory.</li><li><strong>TRAIN → TRAINS:</strong> the S is available; adding it to TRAIN also forms STRAIN.</li><li><strong>REASON → TREASON:</strong> adding T still stays within the inventory.</li><li><strong>REASONING:</strong> this longer form uses two Ns and two Es, which the base contains.</li><li><strong>GENERATION:</strong> the ten-letter form is a valid word and is shorter than the base.</li></ul><p>Here are traps from the same family. <strong>GENERATE</strong> needs three Es, but the base has two. <strong>SENATORS</strong> needs two Ss, but the base has one. <strong>ENTERING</strong> is not a repeat-letter trap: it fits the letter inventory and is in the current dictionary. Checking examples against the actual validator prevents a plausible-sounding rule from turning into bad advice.</p></section>
+
+    <section class="legal-section"><h2>Stems first, forms second</h2><p>Try this order when a round starts:</p><ol class="guide-list"><li>Find a short word you can verify confidently.</li><li>Use that word as a stem and look for a plural, a related verb or a common suffix.</li><li>Check whether a prefix creates another familiar word.</li><li>Count repeated letters for each new candidate, not just once for the whole ladder.</li><li>Submit only after the form passes the dictionary and tile checks.</li></ol><p>One stem may produce several accepted forms, one accepted form, or none. The search process is useful even when a candidate fails: it directs attention to the letters still unused.</p></section>
+
+    <section class="legal-section"><h2>When a ladder lies</h2><p>English spelling is irregular, and the word list is not a complete grammar engine. A suffix may require a spelling change, an apparently regular form may be missing, or a word may be accepted even if it is rare. Spliinter checks actual list membership; it does not generate every grammatical form automatically.</p><p>If a candidate is rejected, separate the possible causes: not enough copies of a letter, absent letters, fewer than three letters, the base word itself, or no dictionary entry. The <a href="/guides/letter-count-traps.html">letter-count guide</a> covers the first two, while <a href="/guides/how-word-validation-works.html">the validation guide</a> explains the full server check.</p></section>
+
+    <section class="legal-section"><h2>Related guides</h2><p><a href="/">Play a round</a>, warm up with <a href="/guides/three-letter-words.html">three-letter words</a>, review <a href="/guides/letter-count-traps.html">repeat-letter traps</a>, or see the <a href="/strategy.html">two-minute strategy</a>.</p></section>
+  </main>
+  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Site"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Word strategy</a><a href="/faq.html">FAQ</a><a href="/guides/three-letter-words.html">Three-letter words</a><a href="/guides/prefix-and-suffix-stripping.html">Word ladders</a><a href="/guides/letter-count-traps.html">Letter-count traps</a><a href="/guides/unique-only-scoring.html">Unique scoring</a><a href="/guides/reading-a-base-word.html">Read a base word</a><a href="/guides/host-a-word-game-night.html">Host a game night</a><a href="/guides/how-word-validation-works.html">Word validation</a><a href="/guides/choosing-a-word-list.html">Dictionary</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
+  <div id="cookieBanner" class="cookie-banner" hidden role="region" aria-label="Cookie choices"><p>Spliinter uses essential browser storage to keep the game working. Optional advertising or analytics technologies will only be used with your consent where required.</p><div class="cookie-actions"><button id="cookieReject" class="btn btn-outline" type="button">Reject optional</button><button id="cookieAccept" class="btn" type="button">Accept optional</button></div></div>
+  <script src="/cookie-consent.js"></script>
+  <script src="/analytics.js"></script>
+</body>
+</html>

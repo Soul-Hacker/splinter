@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6G16BK3GC0"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-6G16BK3GC0');
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Read repeated letters, vowels and useful stems in a Spliinter base word, with measurements from its built-in common-word pool.">
+  <link rel="canonical" href="https://spliinter.in/guides/reading-a-base-word.html">
+  <title>How to read a Spliinter base word | Spliinter</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="legal-body">
+  <header class="top"><a class="brand" href="/">Spliinter</a><nav class="primary-nav" aria-label="Main"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Strategy</a><a href="/faq.html">FAQ</a><a href="/about.html">About</a></nav></header>
+  <main class="legal-page">
+    <p class="eyebrow">By Silent Engineer · Updated 05 October 2026</p>
+    <h1 class="hero hero-sm">How to read a Spliinter base word</h1>
+    <p class="lede">Before searching for words, scan the tile inventory. Repeated letters change what you can build, while vowels and common stems give you places to start. The numbers below describe Spliinter’s optional common-word pool, not every random round.</p>
+
+    <section class="legal-section"><h2>Start with the inventory</h2><p>Look for letters that occur more than once, then count the vowels. A repeated E, S or N can open several word forms; a single copy can make a tempting plural or suffix impossible. The tile row is the resource limit, so note its repeated copies before guessing.</p><p>Next, notice combinations that may form familiar stems or endings. A base with S might permit a plural that another base cannot. A base with E and D may suggest a past-tense ending. Those letters are clues, not a promise: the full candidate still needs to fit the inventory and appear in the game dictionary.</p></section>
+
+    <section class="legal-section"><h2>What the current common pool shows</h2><p>For this snapshot, I counted dictionary words of three or more letters that are shorter than each base and fit its letter counts. The calculation used all 91 entries in the built-in <code>BASE_WORDS=common</code> pool and the dictionary loaded by the server on 05 October 2026. The results are not measurements of the default random pool, and the common pool is deliberately small.</p><div class="table-wrap guide-table-wrap"><table class="standings guide-table"><thead><tr><th scope="col">Pool group</th><th scope="col">Bases</th><th scope="col">Average valid subwords</th></tr></thead><tbody>
+      <tr><td>All common-pool bases</td><td>91</td><td>772.3</td></tr>
+      <tr><td>Contains S</td><td>41</td><td>1,086.3</td></tr>
+      <tr><td>No S</td><td>50</td><td>514.8</td></tr>
+      <tr><td>Contains E and D</td><td>18</td><td>1,041.9</td></tr>
+      <tr><td>No E+D pair</td><td>73</td><td>705.8</td></tr>
+      <tr><td>Contains I, N and G</td><td>15</td><td>757.3</td></tr>
+      <tr><td>No I+N+G combination</td><td>76</td><td>775.3</td></tr>
+      <tr><td>Average vowel share per base word</td><td>91</td><td>39.3%</td></tr>
+    </tbody></table></div><p>The S group has about 2.1 times the average subword count of the no-S group in this particular hand-picked pool. That is an association in a small, selected sample—not proof that adding S causes a fixed score increase. The I+N+G split is a useful counterexample: this group’s average is slightly lower, not higher. Letter combinations matter together, and the dictionary also shapes every count.</p><p>The pool ranges from 116 possible subwords for LIGHTWEIGHT to 3,036 for RELATIONSHIP; its median is 531 for EXPLANATION. These totals count dictionary matches, not words a typical player knows or will find in a two-minute round.</p></section>
+
+    <section class="legal-section"><h2>Three bases, three search starts</h2><p>These examples are grouped by their count within the current common pool, not by an objective difficulty rating. The words listed are examples that pass the current validator; they are not exhaustive answers.</p><ul class="guide-list"><li><strong>Lower-count example — LIGHTWEIGHT (116):</strong> LIGHT, WEIGHT, WHITE, THIGH, EIGHT, HEIGHT, TIGHT, THE, WET, WIT. Count the repeated Is, Gs, Hs and Ts before exploring endings.</li><li><strong>Middle example — EXPLANATION (531):</strong> PLANE, PLANT, PLAIN, EXPLAIN, EXALT, POINT, LATE, LEAN, ALONE, NATION. Try both the E-X-P-L-A-I-N stem and shorter vowel-rich combinations.</li><li><strong>Higher-count example — RELATIONSHIP (3,036):</strong> RELATION, HEART, PERSONAL, PERSON, LEARN, SHARE, TRAIN, POINT, PLANE, THEIR. Repeated I is available, but most other letters appear once.</li></ul><p>The labels describe dictionary opportunity in this one pool. They do not predict how quickly a person will recognize a word, how many other players will submit it, or how many points it will earn.</p></section>
+
+    <section class="legal-section"><h2>Use common letters without ignoring the rest</h2><p>English has many words built around common letters such as E, A, R, T, N, I and O, so those tiles make useful starting points. But a familiar pattern can be shared by many players. Once you have submitted obvious words, inspect less-used letters and combinations that may lead to a less expected answer.</p><p>Rare letters are not automatically dead weight. Try a short, dictionary-known candidate if the inventory fits, but do not spend the whole round forcing a letter into an unlikely string. The server’s dictionary—not a general frequency table—decides whether a candidate is accepted.</p></section>
+
+    <section class="legal-section"><h2>Related guides</h2><p><a href="/">Play a round</a>, use the <a href="/guides/three-letter-words.html">base-word availability table</a>, practise <a href="/guides/prefix-and-suffix-stripping.html">word-family ladders</a>, or follow the <a href="/strategy.html">round strategy</a>.</p></section>
+  </main>
+  <footer class="site-footer"><span>© 2026 Spliinter</span><nav aria-label="Site"><a href="/how-to-play.html">How to play</a><a href="/strategy.html">Word strategy</a><a href="/faq.html">FAQ</a><a href="/guides/three-letter-words.html">Three-letter words</a><a href="/guides/prefix-and-suffix-stripping.html">Word ladders</a><a href="/guides/letter-count-traps.html">Letter-count traps</a><a href="/guides/unique-only-scoring.html">Unique scoring</a><a href="/guides/reading-a-base-word.html">Read a base word</a><a href="/guides/host-a-word-game-night.html">Host a game night</a><a href="/guides/how-word-validation-works.html">Word validation</a><a href="/guides/choosing-a-word-list.html">Dictionary</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><button id="cookieManage" class="footer-button" type="button">Cookie settings</button></nav></footer>
+  <div id="cookieBanner" class="cookie-banner" hidden role="region" aria-label="Cookie choices"><p>Spliinter uses essential browser storage to keep the game working. Optional advertising or analytics technologies will only be used with your consent where required.</p><div class="cookie-actions"><button id="cookieReject" class="btn btn-outline" type="button">Reject optional</button><button id="cookieAccept" class="btn" type="button">Accept optional</button></div></div>
+  <script src="/cookie-consent.js"></script>
+  <script src="/analytics.js"></script>
+</body>
+</html>
