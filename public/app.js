@@ -343,7 +343,7 @@
     const room = state.room;
     $('lobbyTitle').textContent = room.name;
     $('roomCodeText').textContent = room.code;
-    $('inviteLink').value = `${location.origin}/?room=${room.code}`;
+    $('inviteLink').value = `${location.origin}/spliinter.html?room=${room.code}`;
     $('roomVisibility').textContent = room.isPublic
       ? 'Public room: listed in the room browser for anyone to join.'
       : 'Private room: only people with the code or link can join.';

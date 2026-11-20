@@ -8,6 +8,7 @@ const { RoomManager, normalizeCode } = require('./lib/rooms');
 const { loadDictionary } = require('./lib/dictionary');
 const { prepareBaseWords, SOURCE } = require('./lib/baseWords');
 const { FixedWindowRateLimiter } = require('./lib/fixedWindowRateLimiter');
+const { NeonRoomManager } = require('./lib/neonRooms');
 
 const PORT = Number(process.env.PORT) || 3000;
 const ROUND_SECONDS = Number(process.env.ROUND_SECONDS) || 120;
@@ -26,9 +27,15 @@ const SOCKET_RATE_LIMITS = {
   start: 10,
   submit: 120,
   playAgain: 5,
+  'neon:create': 5,
+  'neon:join': 30,
+  'neon:respond': 60,
+  'neon:leave': 30,
 };
 const SOCKET_CONNECTIONS_PER_MINUTE = 30;
+const NEON_MESSAGES_PER_MINUTE = 2400;
 const rateLimiter = new FixedWindowRateLimiter();
+const neonRooms = new NeonRoomManager();
 
 const BROWSER = 'room-browser'; // socket.io room for sockets that are looking at the room list
 
@@ -110,6 +117,38 @@ const asObject = (value) => (value && typeof value === 'object' ? value : {});
 io.on('connection', (socket) => {
   const currentRoom = () => (socket.data.room ? manager.get(socket.data.room) : null);
 
+  function leaveNeonRoom() {
+    const result = neonRooms.leave(socket.id);
+    if (!result) return;
+
+    socket.data.neonRoom = null;
+    socket.data.neonRole = null;
+    socket.data.neonPlayerId = null;
+    socket.data.neonPending = null;
+    socket.leave(result.roomName);
+
+    if (result.role === 'host') {
+      for (const id of [...result.memberSocketIds, ...result.pendingSocketIds]) {
+        const member = io.sockets.sockets.get(id);
+        if (member) {
+          member.data.neonRoom = null;
+          member.data.neonRole = null;
+          member.data.neonPlayerId = null;
+          member.data.neonPending = null;
+          member.leave(result.roomName);
+        }
+        io.to(id).emit('neon:closed');
+      }
+    } else if (result.role === 'player') {
+      io.to(result.hostSocketId).emit('neon:player-left', {
+        playerId: result.playerId,
+        name: result.name,
+      });
+    } else if (result.role === 'pending') {
+      io.to(result.hostSocketId).emit('neon:request-cancelled', { requestId: result.requestId });
+    }
+  }
+
   /** Puts this socket inside a room after a successful create/join. */
   function enterRoom(result, ack) {
     socket.data.room = result.game.code;
@@ -127,6 +166,117 @@ io.on('connection', (socket) => {
     }
     reply(ack, { ok: true, code: result.game.code, token: result.token, username: result.username });
   }
+
+  socket.on('neon:create', (payload, ack) => {
+    if (!allowSocketEvent(socket, 'neon:create', ack)) return;
+    if (socket.data.room || socket.data.neonRoom || socket.data.neonPending) {
+      return reply(ack, { ok: false, error: 'Leave your current room first.' });
+    }
+
+    const result = neonRooms.create(socket.id, asObject(payload).name);
+    if (!result.ok) return reply(ack, result);
+    socket.data.neonRoom = result.code;
+    socket.data.neonRole = 'host';
+    socket.data.neonPlayerId = 0;
+    socket.join(`neon:${result.code}`);
+    reply(ack, { ok: true, code: result.code, name: result.name });
+  });
+
+  socket.on('neon:join', (payload, ack) => {
+    if (!allowSocketEvent(socket, 'neon:join', ack)) return;
+    if (socket.data.room || socket.data.neonRoom || socket.data.neonPending) {
+      return reply(ack, { ok: false, error: 'Leave your current room or request first.' });
+    }
+
+    const data = asObject(payload);
+    const result = neonRooms.requestJoin(socket.id, data.code, data.name);
+    if (!result.ok) return reply(ack, result);
+    const host = io.sockets.sockets.get(result.hostSocketId);
+    if (!host) {
+      neonRooms.leave(socket.id);
+      return reply(ack, { ok: false, error: 'That room is no longer available.' });
+    }
+
+    socket.data.neonPending = result.requestId;
+    reply(ack, { ok: true, requestId: result.requestId });
+    host.emit('neon:join-request', { requestId: result.requestId, name: result.name });
+  });
+
+  socket.on('neon:respond', (payload, ack) => {
+    if (!allowSocketEvent(socket, 'neon:respond', ack)) return;
+    const data = asObject(payload);
+    const result = neonRooms.respond(socket.id, data.requestId, data.accept === true);
+    if (!result.ok) {
+      if (result.socketId) {
+        const pending = io.sockets.sockets.get(result.socketId);
+        if (pending) {
+          pending.data.neonPending = null;
+          pending.emit('neon:join-rejected', { requestId: data.requestId, message: result.error });
+        }
+      }
+      return reply(ack, result);
+    }
+
+    const player = io.sockets.sockets.get(result.socketId);
+    if (!player) {
+      const disconnected = neonRooms.leave(result.socketId);
+      if (disconnected && disconnected.role === 'player') {
+        io.to(disconnected.hostSocketId).emit('neon:player-left', {
+          playerId: disconnected.playerId,
+          name: disconnected.name,
+        });
+      }
+      return reply(ack, { ok: false, error: 'That player is no longer connected.' });
+    }
+    player.data.neonPending = null;
+
+    if (!result.accepted) {
+      player.emit('neon:join-rejected', { requestId: data.requestId, message: 'The host declined your request.' });
+      return reply(ack, { ok: true, accepted: false });
+    }
+
+    player.data.neonRoom = result.code;
+    player.data.neonRole = 'player';
+    player.data.neonPlayerId = result.playerId;
+    player.join(`neon:${result.code}`);
+    player.emit('neon:joined', {
+      code: result.code,
+      playerId: result.playerId,
+      name: result.name,
+      roster: result.roster,
+    });
+    reply(ack, { ok: true, accepted: true, playerId: result.playerId, name: result.name });
+  });
+
+  socket.on('neon:message', (payload, ack) => {
+    const { allowed, retryAfter } = rateLimiter.consume(
+      `${socket.id}:neon:message`,
+      NEON_MESSAGES_PER_MINUTE
+    );
+    if (!allowed) {
+      return reply(ack, {
+        ok: false,
+        error: `Neon Swarm is receiving updates too quickly. Try again in ${retryAfter} seconds.`,
+      });
+    }
+
+    const result = neonRooms.routeMessage(socket.id, asObject(payload).data);
+    if (!result.ok) return reply(ack, result);
+
+    const message = { data: payload.data };
+    if (result.hostSocketId) {
+      io.to(result.hostSocketId).emit('neon:message', { ...message, fromId: result.fromId });
+    } else {
+      io.to(result.roomName).except(result.exceptSocketId).emit('neon:message', message);
+    }
+    reply(ack, { ok: true });
+  });
+
+  socket.on('neon:leave', (_payload, ack) => {
+    if (!allowSocketEvent(socket, 'neon:leave', ack)) return;
+    leaveNeonRoom();
+    reply(ack, { ok: true });
+  });
 
   socket.on('rooms:subscribe', (_payload, ack) => {
     if (!allowSocketEvent(socket, 'rooms:subscribe', ack)) return;
@@ -197,6 +347,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     const game = currentRoom();
     if (game && socket.data.token) game.disconnect(socket.data.token, socket.id);
+    leaveNeonRoom();
   });
 });
 

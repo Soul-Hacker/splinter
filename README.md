@@ -4,6 +4,9 @@ A real-time multiplayer word game. Everyone in a room gets the same long word an
 
 Node.js + Socket.io on the server, plain HTML/CSS/JavaScript on the client. No database: all state lives in server memory.
 
+Neon Swarm multiplayer uses the same Socket.IO server. Its rooms are also
+in-memory and end when the host leaves or the server restarts.
+
 The multiplayer app does not load advertising. Public editorial pages such as
 `/how-to-play.html`, `/strategy.html`, `/faq.html`, and the articles under
 `/guides/` are separate static pages and are listed in `public/sitemap.xml`.
@@ -28,7 +31,7 @@ npm install
 npm start
 ```
 
-Open http://localhost:3000 in two browser tabs. Each tab is its own player (the session is kept per tab), so you can test alone: pick a username in each tab, create a room in one, join it from the other with the room code, then press **Start game** as the host.
+Open http://localhost:3000 and choose Spliinter to open the word game. In two browser tabs, each tab is its own player (the session is kept per tab), so you can test alone: pick a username in each tab, create a room in one, join it from the other with the room code, then press **Start game** as the host.
 
 To play with other people on the same Wi-Fi, run the server on your machine and have them open `http://<your-local-IP>:3000`.
 
