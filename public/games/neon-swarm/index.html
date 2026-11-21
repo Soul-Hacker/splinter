@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Neon Swarm</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23070914'/%3E%3Ccircle cx='32' cy='32' r='19' fill='none' stroke='%233dd6ff' stroke-width='4'/%3E%3Cpath d='M32 17l4 11 11 4-11 4-4 11-4-11-11-4 11-4z' fill='%23f2fbff'/%3E%3Ccircle cx='48' cy='17' r='4' fill='%23a66bff'/%3E%3C/svg%3E">
+  <meta name="theme-color" content="#070914">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/games/neon-swarm/styles.css">
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="menu">
+    <section class="menu-card" aria-labelledby="game-title">
+      <div class="menu-kicker">
+        <span><i class="live-dot"></i> ARCADE SYSTEM ONLINE</span>
+        <span>01 — SURVIVE THE SWARM</span>
+      </div>
+      <h1 id="game-title">NEON <span>SWARM</span></h1>
+      <p class="menu-lede">A hostile sector. Endless waves. One pilot. How long can you hold the line?</p>
+      <div class="menu-actions">
+        <button id="sp">
+          <span class="action-title">Single Player</span>
+          <span class="action-subtitle">Enter the swarm solo</span>
+        </button>
+        <button id="mp">
+          <span class="action-title">Multiplayer</span>
+          <span class="action-subtitle">Create a room or join your crew</span>
+        </button>
+      </div>
+      <div id="help">
+        <span class="control"><kbd>WASD</kbd> <kbd>↑↓←→</kbd> Move</span>
+        <span class="control"><kbd>MOUSE</kbd> Aim</span>
+        <span class="control"><kbd>CLICK</kbd> <kbd>H</kbd> Fire</span>
+        <span class="control"><kbd>SPACE</kbd> <kbd>RIGHT CLICK</kbd> Dash</span>
+        <span class="control"><kbd>P</kbd> <kbd>ESC</kbd> Pause</span>
+        <span class="control"><kbd>M</kbd> Mute audio</span>
+        <span class="control"><kbd>E</kbd> <kbd>F</kbd> Use power-up</span>
+      </div>
+      <div class="menu-footer">
+        <a class="hub-link" href="/">GAME HUB</a>
+        <span id="hi"></span>
+        <span id="msg" role="status"></span>
+      </div>
+    </section>
+  </div>
+  <div id="ui"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/games/neon-swarm/scripts/core.js"></script>
+  <script src="/games/neon-swarm/scripts/render.js"></script>
+  <script src="/games/neon-swarm/scripts/multiplayer-rules.js"></script>
+  <script src="/games/neon-swarm/scripts/multiplayer.js"></script>
+  <script src="/games/neon-swarm/scripts/multiplayer-render.js"></script>
+  <script src="/games/neon-swarm/scripts/input.js"></script>
+</body>
+</html>
