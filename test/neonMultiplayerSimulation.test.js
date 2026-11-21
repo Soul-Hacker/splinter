@@ -252,7 +252,7 @@ test('nuke uses the inclusive 300-unit radius, credits kills, and spares shield 
   assert.equal(state(context, 'mp.pl[2].al'), true);
   assert.equal(state(context, 'mp.pl[3].al'), true);
   assert.equal(state(context, 'mp.pl[4].al'), true);
-  assert.equal(state(context, 'mp.pl[0].kills'), 2);
+  assert.equal(state(context, 'mp.pl[0].kills'), 1);
   assert.equal(state(context, 'mp.pl[0].powerup'), 'light');
   assert.ok(state(context, "mp.ev.some((event)=>event[0]==='nuke')"));
 });
@@ -361,7 +361,7 @@ test('EMP freezes for five seconds, blocks controls but not incoming bullets', (
   assert.ok(state(context, 'mp.pl[1].x') > frozenX);
 });
 
-test('bots do not shoot, drop directly to the killer, and expire without a drop', () => {
+test('bots do not shoot, grant power-ups but not kills, and expire without a drop', () => {
   const { context } = createBrowser();
   const host = player(0, 'HOST', 800, 450);
   const target = player(1, 'TARGET', 900, 450);
@@ -372,7 +372,7 @@ test('bots do not shoot, drop directly to the killer, and expire without a drop'
   assert.equal(state(context, 'mp.bl.length'), 0);
 
   vm.runInContext("for(let i=0;i<4;i++)damageBot(mp.bots[0],mp.pl[0])", context);
-  assert.equal(state(context, 'mp.pl[0].kills'), 1);
+  assert.equal(state(context, 'mp.pl[0].kills'), 0);
   assert.equal(state(context, 'mp.pl[0].powerup'), 'shield');
   assert.ok(state(context, "mp.ev.some((event)=>event[0]==='bot-killed')"));
   assert.ok(state(context, "mp.ev.some((event)=>event[0]==='powerup')"));

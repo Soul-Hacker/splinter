@@ -67,7 +67,7 @@ function killPlayer(p,killer,cause){if(!p.al)return;p.al=false;p.rt=2;p.deaths++
 if(killer)killer.kills++;
 ev(['k',killer?killer.name:cause,p.name,rd(p.x),rd(p.y),p.col,p.id])}
 function killBot(b,killer){if(b.dead)return;b.dead=true;ev(['bot-killed',b.id,killer.id,rd(b.x),rd(b.y),b.powerup]);
-killer.kills++;killer.powerup=b.powerup;ev(['powerup',killer.id,killer.name,b.powerup])}
+killer.powerup=b.powerup;ev(['powerup',killer.id,killer.name,b.powerup])}
 function damageBot(b,killer){if(b.dead)return;b.hp--;ev(['bot-hit',b.id,rd(b.x),rd(b.y),b.hp]);
 if(b.hp<=0){if(killer)killBot(b,killer);else b.dead=true}}
 function spawnBot(){const m=mp,index=m.botIndex++;if(m.bots.filter(b=>!b.dead).length>=NR.MAX_ACTIVE_BOTS)return;
