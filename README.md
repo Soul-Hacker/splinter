@@ -150,8 +150,41 @@ lib/game.js        One room's state machine: players, host, phases, timers, meda
 lib/rules.js       Pure functions: word validation, round scoring, medals
 lib/dictionary.js  Loads word-list into memory
 lib/baseWords.js   Picks the random (or common) base word for each round
-public/            index.html, style.css, app.js (client), editorial and policy pages
+public/            Game hub, Spliinter client, and editorial and policy pages
+public/games/      One folder per standalone game and its browser assets
+  spliinter/       Spliinter page, game-only styles, and browser client
+  neon-swarm/      Neon Swarm page, styles, and separated client components
 ```
+
+### Adding another game
+
+Put each standalone game's page and assets in its own folder under
+`public/games/<game-name>/`. Keep that game's styles and browser code alongside
+its page, then add a card linking to `/games/<game-name>/` in `public/index.html`.
+Shared server-side game services remain in `server.js` and `lib/`; keep
+game-specific client code in its own folder unless it is intentionally shared.
+The common `public/style.css` remains for shared site and editorial styles;
+game-specific visual overrides belong in each game's `styles.css`.
+
+Neon Swarm's browser code is divided by responsibility:
+
+- `scripts/core.js` — shared state, audio, data, and single-player simulation
+- `scripts/render.js` — single-player canvas rendering and HUD
+- `scripts/multiplayer-rules.js` — validated input, match bot schedule, and power-up rules
+- `scripts/multiplayer.js` — room UI, networking, and multiplayer simulation
+- `scripts/multiplayer-render.js` — multiplayer canvas rendering and HUD
+- `scripts/input.js` — keyboard/mouse handling and the frame loop
+- `styles.css` — game-specific presentation
+
+Spliinter's multiplayer word-game server logic remains organized in `lib/`;
+its browser page, client script, and arcade skin are under
+`public/games/spliinter/`:
+
+- `scripts/app.js` — room/session flow, Socket.IO actions, game screens, and results
+- `styles.css` — the word game's arcade theme, separate from shared site styles
+
+The former `/neon_swarm.html` and `/spliinter.html` URLs continue to work for
+existing bookmarks and invite links.
 
 ## High-Level Design (HLD)
 

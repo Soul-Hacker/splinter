@@ -44,6 +44,12 @@ app.set('trust proxy', TRUST_PROXY_HOPS);
 const server = http.createServer(app);
 const io = new Server(server, { maxHttpBufferSize: 16 * 1024 });
 
+app.get('/neon_swarm.html', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public/games/neon-swarm/index.html'));
+});
+app.get('/spliinter.html', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public/games/spliinter/index.html'));
+});
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/api/config', (_req, res) => res.json({ roundSeconds: ROUND_SECONDS }));
 app.get('/healthz', (_req, res) => res.send('ok'));
